@@ -1,0 +1,572 @@
+<?php
+// index.php: Formulario sin base de datos, cálculos en front y exportación a plantilla por POST.
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Hospitalización</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+<body>
+    <div class="header text-center">
+        <h1><i class="fas fa-hospital me-2"></i>Sistema de Hospitalización</h1>
+        <p class="lead">Registro y control de pacientes — Sin base de datos</p>
+    </div>
+
+    <div class="container">
+                <div class="data-management">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-lg-4">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" type="button" id="loadBtn">Cargar</button>
+                        <button class="btn btn-secondary" type="button" id="newBtn">Nuevo</button>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-8 d-flex flex-column flex-md-row gap-2">
+                    <button class="btn btn-warning flex-fill" id="exportBtn">
+                        <i class="fas fa-file-export me-1"></i> Exportar planilla (plantilla Excel)
+                    </button>
+                    <button class="btn btn-outline-primary flex-fill" type="button" id="openArsenalBtn">
+                        <i class="fas fa-capsules me-1"></i> Administrar arsenal
+                    </button>
+                    <button class="btn btn-outline-success flex-fill" type="button" id="openConfigBtn">
+                        <i class="fas fa-sliders-h me-1"></i> Configurar listas
+                    </button>
+                </div>
+            </div>
+            <input type="file" id="excelFileInput" class="d-none" accept=".xlsx,.xls,.xlsm">
+        </div>
+
+        <form id="hospitalizacionForm">
+            <!-- Datos Básicos -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Datos Básicos del Paciente
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Fecha</label>
+                                <input type="date" class="form-control" id="fecha" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Fecha de Ingreso</label>
+                                <input type="date" class="form-control" id="fechaIngreso" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Fecha de Nacimiento</label>
+                                <input type="date" class="form-control" id="fechaNacimiento" required>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-3">
+                                <label>Hora</label>
+                                <input type="time" class="form-control" id="hora">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-3">
+                                <label>Edad</label>
+                                <input type="text" class="form-control calculated-field" id="edad" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group mb-3">
+                                <label>Días Hosp.</label>
+                                <input type="text" class="form-control calculated-field" id="diasHospitalizacion" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Cama</label>
+                                <select class="form-select" id="cama" required></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Sexo</label>
+                                <select class="form-select" id="sexo" required></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Nombre del Paciente</label>
+                                <input type="text" class="form-control" id="nombrePaciente" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="required-field">RUT</label>
+                                <input type="text" class="form-control" id="rut" required placeholder="12.345.678-9">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Ficha</label>
+                                <input type="text" class="form-control" id="ficha" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Médico Responsable</label>
+                                <input type="text" class="form-control" id="medicoResponsable" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                <label>Diagnóstico</label>
+                                <textarea class="form-control" id="diagnostico" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Antropométricos -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-weight me-2"></i>Datos Antropométricos
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Peso (kg)</label>
+                                <input type="number" class="form-control" id="peso" step="0.1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label class="required-field">Talla (cm)</label>
+                                <input type="number" class="form-control" id="talla" step="0.1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Peso Ideal</label>
+                                <input type="text" class="form-control calculated-field" id="pesoIdeal" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>SC T/M2</label>
+                                <input type="text" class="form-control calculated-field" id="sctm2" readonly>
+                                <small class="form-text text-muted">Superficie Corporal (Mosteller)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Volumen Holliday</label>
+                                <input type="text" class="form-control calculated-field" id="volumenHolliday" readonly>
+                                <small class="form-text text-muted">Mantenimiento de líquidos (pediátrico)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Volumen *SC</label>
+                                <input type="text" class="form-control calculated-field" id="volumenSC" readonly>
+                                <small class="form-text text-muted">1500 mL × SC</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>CREA</label>
+                                <input type="number" class="form-control" id="crea" step="0.01">
+                                <small class="form-text text-muted">Creatinina (mg/dL)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>VFG</label>
+                                <input type="text" class="form-control calculated-field" id="vfg" readonly>
+                                <small class="form-text text-muted">Tasa de filtración glomerular</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group mb-3">
+                                <label>REB</label>
+                                <input type="text" class="form-control calculated-field" id="reb" readonly>
+                                <small class="form-text text-muted">Requerimiento Energético en Reposo</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indiciaciones Medicas -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-notes-medical me-2"></i>Indiciaciones Medicas
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="reposo">
+                                    <label class="form-check-label ms-2" for="reposo">Reposo</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="la">
+                                    <label class="form-check-label ms-2" for="la">LA</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="sng">
+                                    <label class="form-check-label ms-2" for="sng">SNG</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="sf">
+                                    <label class="form-check-label ms-2" for="sf">SF</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="du">
+                                    <label class="form-check-label ms-2" for="du">DU</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="bh">
+                                    <label class="form-check-label ms-2" for="bh">BH</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="cvc">
+                                    <label class="form-check-label ms-2" for="cvc">CVC</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="bis">
+                                    <label class="form-check-label ms-2" for="bis">BIS</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input class="form-check-input" type="checkbox" id="tof">
+                                    <label class="form-check-label ms-2" for="tof">TOF</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Aislamiento</label>
+                                <select class="form-select" id="aislamiento"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>Régimen</label>
+                                <input type="text" class="form-control" id="regimen">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>VM</label>
+                                <select class="form-select" id="vm"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>SA</label>
+                                <select class="form-select" id="sa"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>ESC</label>
+                                <select class="form-select" id="esc"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>RASS</label>
+                                <select class="form-select" id="rass"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medicamentos (única) -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-pills me-2"></i>Medicamentos
+                </div>
+                <div class="card-body">
+                                        <table class="table table-bordered medicamento-table" id="medicamentos">
+                        <thead>
+                            <tr>
+                                <th width="40%">Medicamento</th>
+                                <th width="20%">Dosis</th>
+                                <th width="15%">Volumen</th>
+                                <th width="15%">Fecha Indicaci�n</th>
+                                <th width="10%">Acci�n</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()">
+                        <i class="fas fa-plus me-1"></i> Agregar Fila
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recetas (solo visual, no se usa directo para la plantilla nueva) -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-file-prescription me-2"></i>Recetas</div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Fecha Receta</label>
+                                <input type="date" class="form-control" id="fechaReceta">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nombre Paciente Receta</label>
+                                <input type="text" class="form-control" id="nombrePacienteReceta" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>N° Ficha Clínica Receta</label>
+                                <input type="text" class="form-control" id="fichaReceta" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Servicio / Cama Receta</label>
+                                <input type="text" class="form-control" id="camaReceta" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Peso (kg) Receta</label>
+                                <input type="text" class="form-control" id="pesoReceta" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Edad Receta</label>
+                                <input type="text" class="form-control" id="edadReceta" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Diagnósticos Receta</label>
+                                <textarea class="form-control" id="diagnosticoReceta" rows="2" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <h5>Medicamentos Recetados</h5>
+                    <table class="table table-bordered" id="tablaRecetas">
+                        <thead>
+                            <tr>
+                                <th width="50%">Medicamento</th>
+                                <th width="25%">Dosis</th>
+                                <th width="25%">Volumen</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="action-buttons no-print">
+                <button type="reset" class="btn btn-secondary">Limpiar</button>
+                <button type="button" class="btn btn-primary" id="calculateBtn">Calcular</button>
+            </div>
+        </form>
+    </div>
+
+<div class="modal fade" id="arsenalModal" tabindex="-1" aria-labelledby="arsenalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="arsenalModalLabel"><i class="fas fa-capsules me-2"></i>Cat�logo de Arsenal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="arsenal-toolbar d-flex flex-column flex-md-row gap-2 mb-3">
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="search" class="form-control" id="arsenalSearch" placeholder="Buscar por c�digo o nombre">
+          </div>
+          <button class="btn btn-success" type="button" id="arsenalAddBtn">
+            <i class="fas fa-plus me-1"></i> Nuevo
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped align-middle" id="arsenalTable">
+            <thead>
+              <tr>
+                <th style="width:120px">C�digo</th>
+                <th>Nombre</th>
+                <th style="width:150px">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline-primary" id="arsenalExportBtn">
+          <i class="fas fa-download me-1"></i> Exportar JSON
+        </button>
+        <button type="button" class="btn btn-primary" id="arsenalSaveFileBtn">
+          <i class="fas fa-save me-1"></i> Guardar en archivo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="arsenalFormModal" tabindex="-1" aria-labelledby="arsenalFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="arsenalFormModalLabel">Medicamento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="arsenalForm">
+          <div class="mb-3">
+            <label class="form-label">C�digo</label>
+            <input type="text" class="form-control" id="arsenalCodigo" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <textarea class="form-control" id="arsenalNombre" rows="2" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="arsenalSaveBtn">
+          <i class="fas fa-save me-1"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="configModal" tabindex="-1" aria-labelledby="configModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="configModalLabel"><i class="fas fa-sliders-h me-2"></i>Listas desplegables</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="flex-fill">
+            <label class="form-label">Seleccione lista</label>
+            <select class="form-select" id="configListSelector"></select>
+          </div>
+          <div class="flex-shrink-0 align-self-end">
+            <button class="btn btn-success" type="button" id="configAddOptionBtn">
+              <i class="fas fa-plus me-1"></i> Nuevo elemento
+            </button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped align-middle" id="configOptionsTable">
+            <thead>
+              <tr>
+                <th style="width:25%">Valor</th>
+                <th>Etiqueta</th>
+                <th style="width:120px">Estado</th>
+                <th style="width:120px">Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-outline-primary" id="configExportBtn">
+          <i class="fas fa-download me-1"></i> Exportar JSON
+        </button>
+        <button type="button" class="btn btn-primary" id="configSaveFileBtn">
+          <i class="fas fa-save me-1"></i> Guardar en archivo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="configOptionModal" tabindex="-1" aria-labelledby="configOptionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="configOptionModalLabel">Elemento</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="configOptionForm">
+          <div class="mb-3">
+            <label class="form-label">Valor</label>
+            <input type="text" class="form-control" id="configOptionValue" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Etiqueta para mostrar</label>
+            <input type="text" class="form-control" id="configOptionLabel" required>
+          </div>
+          <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" id="configOptionDisabled">
+            <label class="form-check-label" for="configOptionDisabled">Deshabilitado</label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="configOptionSelected">
+            <label class="form-check-label" for="configOptionSelected">Seleccionado por defecto</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="configSaveOptionBtn">
+          <i class="fas fa-save me-1"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/config.js"></script>
+<script src="assets/js/arsenal.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
+
+
