@@ -129,6 +129,7 @@ class Paciente {
     set('sexo',this._data.sexo);
     set('nombrePaciente',this._data.nombrePaciente);
     set('rut',this._data.rut);
+    handleRutInput();
     set('ficha',this._data.ficha);
 
     set('peso',this._data.peso);
@@ -705,6 +706,7 @@ function ensureMedicamentoInput(row, selectedCode = '', fallbackName = ''){
 function removeRow(btn){
   const tr = btn.closest('tr');
   tr?.parentNode.removeChild(tr);
+  toggleAddMedicButton();
 }
 
 function syncFechaReceta(){
@@ -712,6 +714,13 @@ function syncFechaReceta(){
   const fechaReceta = document.getElementById('fechaReceta');
   if (fecha && fechaReceta){
     fechaReceta.value = fecha.value || '';
+  }
+}
+
+function clearTablaRecetas(){
+  const tablaRecetas = document.querySelector('#tablaRecetas tbody');
+  if (tablaRecetas){
+    tablaRecetas.innerHTML = '';
   }
 }
 
@@ -731,6 +740,24 @@ function showAppModal(message, title='Aviso'){
     modalEl.classList.add('show');
     modalEl.style.display = 'block';
   }
+}
+
+function handleRutInput(){
+  const input = document.getElementById('rut');
+  if (!input) return;
+  let value = (input.value || '').toUpperCase().replace(/[^0-9K]/g,'');
+  if (!value){
+    input.value = '';
+    return;
+  }
+  if (value.length === 1){
+    input.value = value;
+    return;
+  }
+  const cuerpo = value.slice(0,-1);
+  const dv = value.slice(-1);
+  const formattedBody = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  input.value = `${formattedBody}-${dv}`;
 }
 
 function calcularYActualizar(){
@@ -794,7 +821,12 @@ async function cargarExcelDesdeArchivo(file){
 function nuevoFormulario(){
   if(!confirm('Â¿Crear nuevo formulario?')) return;
   pacienteActual = new Paciente();
-  document.getElementById('hospitalizacionForm').reset();
+  document.getElementById('hospitalizacionForm').reset();
+
+  const tablaRecetas = document.querySelector('#tablaRecetas tbody');
+  if (tablaRecetas){
+    tablaRecetas.innerHTML = '';
+  }
 
   // Reiniciar tabla de medicamentos con una fila vacÃ­a
   const tbody = document.querySelector('#medicamentos tbody');
@@ -816,6 +848,13 @@ function nuevoFormulario(){
 // =========================
 function addRowMedic() {
     const tbody = document.querySelector('#medicamentos tbody');
+    if (!tbody) return;
+    const currentRows = tbody.querySelectorAll('tr').length;
+    if (currentRows >= 37){
+      alert('Solo se permiten hasta 37 medicamentos por formulario.');
+      toggleAddMedicButton(true);
+      return;
+    }
     const tr = document.createElement('tr');
     tr.innerHTML = `
         <td class="medicamento-cell"></td>
@@ -830,6 +869,16 @@ function addRowMedic() {
     `;
     tbody.appendChild(tr);
     ensureMedicamentoInput(tr);
+    toggleAddMedicButton();
+}
+
+function toggleAddMedicButton(forceHide=false){
+  const btn = document.getElementById('addMedicRowBtn');
+  if (!btn) return;
+  const tbody = document.querySelector('#medicamentos tbody');
+  const count = tbody?.querySelectorAll('tr').length || 0;
+  const shouldHide = forceHide || count >= 37;
+  btn.classList.toggle('d-none', shouldHide);
 }
 
 // Si quieres reutilizarla fuera de la clase:
@@ -1500,6 +1549,18 @@ document.addEventListener('DOMContentLoaded',()=>{
   setImportedState(false);
   document.getElementById('fecha')?.addEventListener('change', syncFechaReceta);
   document.getElementById('fecha')?.addEventListener('input', syncFechaReceta);
+  document.getElementById('rut')?.addEventListener('input', handleRutInput);
+  document.getElementById('rut')?.addEventListener('blur', handleRutInput);
+  document.getElementById('hospitalizacionForm')?.addEventListener('reset', ()=>{
+    setTimeout(()=>{
+      const tbody = document.querySelector('#medicamentos tbody');
+      if (tbody){
+        tbody.innerHTML = '';
+        addRowMedic();
+      }
+      clearTablaRecetas();
+    },0);
+  });
   syncFechaReceta();
 
   const tbody = document.querySelector('#medicamentos tbody');
@@ -1510,6 +1571,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       tbody.querySelectorAll('tr').forEach(tr=>ensureMedicamentoInput(tr));
     }
   }
+  toggleAddMedicButton();
 
   renderArsenalTable();
 });

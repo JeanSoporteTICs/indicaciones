@@ -346,7 +346,7 @@
                         </thead>
                         <tbody></tbody>
                     </table>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()" id="addMedicRowBtn">
                         <i class="fas fa-plus me-1"></i> Agregar Fila
                     </button>
                 </div>

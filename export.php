@@ -96,6 +96,17 @@ function formatDateDMY($value): string {
     return date('d-m-Y', $timestamp);
 }
 
+function formatFiLabel($value): string {
+    if (!isset($value)) return '';
+    $value = trim((string)$value);
+    if ($value === '') return '';
+    $timestamp = strtotime(str_replace('/', '-', $value));
+    if ($timestamp === false) {
+        return $value;
+    }
+    return 'FI: ' . date('d/m', $timestamp);
+}
+
 /**
  * Busca filas de la hoja "Receta" que contengan marcadores para medicamento/dosis.
  */
@@ -281,7 +292,7 @@ for ($i = 0; $i < $max; $i++) {
     $slot = $slots[$i];
     $m    = $meds[$i];
 
-    $ws->setCellValue($slot['fi'],    formatDateDMY($m['fi'] ?? ''));
+    $ws->setCellValue($slot['fi'],    formatFiLabel($m['fi'] ?? ''));
     $ws->setCellValue($slot['med'],   $m['medicamento'] ?? '');
     $ws->setCellValue($slot['vol'],   $m['volumen']    ?? '');
     $ws->setCellValue($slot['dosis'], $m['dosis']      ?? '');
