@@ -83,6 +83,20 @@ function fillByMarker(Worksheet $ws, string $marker, $value, int $maxRow = 200, 
 }
 
 /**
+ * Convierte cadenas de fecha a formato DD-MM-YYYY.
+ */
+function formatDateDMY($value): string {
+    if (!isset($value)) return '';
+    $value = trim((string)$value);
+    if ($value === '') return '';
+    $timestamp = strtotime(str_replace('/', '-', $value));
+    if ($timestamp === false) {
+        return $value;
+    }
+    return date('d-m-Y', $timestamp);
+}
+
+/**
  * Busca filas de la hoja "Receta" que contengan marcadores para medicamento/dosis.
  */
 function getRecetaSlots(Worksheet $ws, int $startRow = 1, int $endRow = 200, int $maxCol = 15): array {
@@ -157,9 +171,10 @@ if (!$ws) {
 
 // fecha "general" (puede ser igual a fechaIngreso)
 $fecha = $data['fecha'] ?? ($data['fechaIngreso'] ?? '');
-fillByMarker($ws, '{{fecha}}',            $fecha);
-fillByMarker($ws, '{{fechaIngreso}}',     $data['fechaIngreso']     ?? '');
-fillByMarker($ws, '{{fechaNacimiento}}',  $data['fechaNacimiento']  ?? '');
+$fechaFormat = formatDateDMY($fecha);
+fillByMarker($ws, '{{fecha}}',            $fechaFormat);
+fillByMarker($ws, '{{fechaIngreso}}',     formatDateDMY($data['fechaIngreso']     ?? ''));
+fillByMarker($ws, '{{fechaNacimiento}}',  formatDateDMY($data['fechaNacimiento']  ?? ''));
 fillByMarker($ws, '{{hora}}',             $data['hora']             ?? '');
 fillByMarker($ws, '{{edad}}',             $data['edad']             ?? '');
 fillByMarker($ws, '{{cama}}',             $data['cama']             ?? '');
@@ -177,6 +192,7 @@ fillByMarker($ws, '{{talla}}',            $data['talla']            ?? '');
 fillByMarker($ws, '{{SCTm2}}',            $data['sctm2']            ?? ($data['SCTm2'] ?? ''));
 
 fillByMarker($ws, '{{VOLUMEN HOLLIDAY}}', $data['volumenHolliday']  ?? '');
+fillByMarker($ws, '{{60HOLLIDAY}}', $data['sesentaHolliday'] ?? ($data['60Holliday'] ?? ''));
 fillByMarker($ws, '{{VOLUMEN *SC}}',      $data['volumenSC']        ?? '');
 fillByMarker($ws, '{{CREA}}',             $data['crea']             ?? '');
 fillByMarker($ws, '{{VFG}}',              $data['vfg']              ?? '');
@@ -265,7 +281,7 @@ for ($i = 0; $i < $max; $i++) {
     $slot = $slots[$i];
     $m    = $meds[$i];
 
-    $ws->setCellValue($slot['fi'],    $m['fi']         ?? '');
+    $ws->setCellValue($slot['fi'],    formatDateDMY($m['fi'] ?? ''));
     $ws->setCellValue($slot['med'],   $m['medicamento'] ?? '');
     $ws->setCellValue($slot['vol'],   $m['volumen']    ?? '');
     $ws->setCellValue($slot['dosis'], $m['dosis']      ?? '');
@@ -295,7 +311,7 @@ foreach ($recetaSheets as $sheetName) {
     if ($wsReceta) break;
 }
 if ($wsReceta) {
-    fillByMarker($wsReceta, '{{fecha}}',           $fecha);
+    fillByMarker($wsReceta, '{{fecha}}',           $fechaFormat);
     fillByMarker($wsReceta, '{{nombrePaciente}}',  $data['nombrePaciente'] ?? '');
     fillByMarker($wsReceta, '{{ficha}}',           $data['ficha'] ?? '');
     fillByMarker($wsReceta, '{{cama}}',            $data['cama'] ?? '');

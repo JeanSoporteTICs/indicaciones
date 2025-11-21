@@ -11,39 +11,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
-<body>
-    <div class="header text-center">
-        <h1><i class="fas fa-hospital me-2"></i>Sistema de Hospitalización</h1>
-        <p class="lead">Registro y control de pacientes — Sin base de datos</p>
-    </div>
+<body class="bg-light">
+    <header class="bg-primary text-white py-4 shadow-sm mb-4">
+        <div class="container text-center">
+            <h1 class="h3 mb-1"><i class="fas fa-hospital me-2"></i>Indicaciones Médicas Pediátrica</h1>
+            <p class="lead mb-0">Hospital Base Valdivia</p>
+        </div>
+    </header>
 
-    <div class="container">
-                <div class="data-management">
-            <div class="row g-3 align-items-center">
-                <div class="col-12 col-lg-4">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-primary" type="button" id="loadBtn">Cargar</button>
-                        <button class="btn btn-secondary" type="button" id="newBtn">Nuevo</button>
+    <div class="container pb-5">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <div class="row g-3 align-items-center">
+                    <div class="col-12 col-lg-4">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="button" id="loadBtn">
+                                <i class="fas fa-file-import me-1"></i> Cargar
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="newBtn">
+                                <i class="fas fa-file me-1"></i> Nuevo
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12 col-lg-8 d-flex flex-column flex-md-row gap-2">
-                    <button class="btn btn-warning flex-fill" id="exportBtn">
-                        <i class="fas fa-file-export me-1"></i> Exportar planilla (plantilla Excel)
-                    </button>
-                    <button class="btn btn-outline-primary flex-fill" type="button" id="openArsenalBtn">
-                        <i class="fas fa-capsules me-1"></i> Administrar arsenal
-                    </button>
-                    <button class="btn btn-outline-success flex-fill" type="button" id="openConfigBtn">
-                        <i class="fas fa-sliders-h me-1"></i> Configurar listas
-                    </button>
+                    <div class="col-12 col-lg-8">
+                        <div class="d-flex flex-column flex-md-row gap-2">
+                            <button class="btn btn-warning flex-fill" id="exportBtn">
+                                <i class="fas fa-file-export me-1"></i> Exportar planilla
+                            </button>
+                            <button class="btn btn-outline-dark flex-fill" type="button" id="openMaintainerBtn">
+                                <i class="fas fa-toolbox me-1"></i> Mantenedor
+                            </button>
+                            <button class="btn btn-outline-danger flex-fill d-none" type="button" id="logoutBtn">
+                                <i class="fas fa-door-open me-1"></i> Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <input type="file" id="excelFileInput" class="d-none" accept=".xlsx,.xls,.xlsm">
         </div>
 
-        <form id="hospitalizacionForm">
+        <form id="hospitalizacionForm" class="mb-4">
             <!-- Datos Básicos -->
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <i class="fas fa-info-circle me-2"></i>Datos Básicos del Paciente
                 </div>
@@ -206,13 +216,21 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>60% HOLLIDAY</label>
+                                <input type="text" class="form-control calculated-field" id="60Holliday" readonly>
+                                <small class="form-text text-muted">0,6 × Volumen Holliday</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>REB</label>
                                 <input type="text" class="form-control calculated-field" id="reb" readonly>
                                 <small class="form-text text-muted">Requerimiento Energético en Reposo</small>
                             </div>
                         </div>
+                        <div class="col-md-6 d-none d-md-block"></div>
                     </div>
                 </div>
             </div>
@@ -256,11 +274,11 @@
                                 </div>
                                 <div class="checkbox-item">
                                     <input class="form-check-input" type="checkbox" id="bis">
-                                    <label class="form-check-label ms-2" for="bis">BIS</label>
+                                    <label class="form-check-label ms-2" for="bis">BIS 40-60</label>
                                 </div>
                                 <div class="checkbox-item">
                                     <input class="form-check-input" type="checkbox" id="tof">
-                                    <label class="form-check-label ms-2" for="tof">TOF</label>
+                                    <label class="form-check-label ms-2" for="tof">TOF 1-2 de 4</label>
                                 </div>
                             </div>
                         </div>
@@ -287,17 +305,17 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group mb-3">
-                                <label>SA</label>
-                                <select class="form-select" id="sa"></select>
+                                <label>ESC</label>
+                                <select class="form-select" id="esc"></select>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-9">
                             <div class="form-group mb-3">
-                                <label>ESC</label>
-                                <select class="form-select" id="esc"></select>
+                                <label>SA</label>
+                                <select class="form-select" id="sa"></select>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -311,7 +329,7 @@
             </div>
 
             <!-- Medicamentos (única) -->
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <i class="fas fa-pills me-2"></i>Medicamentos
                 </div>
@@ -322,8 +340,8 @@
                                 <th width="40%">Medicamento</th>
                                 <th width="20%">Dosis</th>
                                 <th width="15%">Volumen</th>
-                                <th width="15%">Fecha Indicaci�n</th>
-                                <th width="10%">Acci�n</th>
+                                <th width="15%">Fecha Indicación</th>
+                                <th width="10%">Acción</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -335,7 +353,7 @@
             </div>
 
             <!-- Recetas (solo visual, no se usa directo para la plantilla nueva) -->
-            <div class="card">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <i class="fas fa-file-prescription me-2"></i>Recetas</div>
                 <div class="card-body">
@@ -401,25 +419,33 @@
                 </div>
             </div>
 
-            <div class="action-buttons no-print">
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
-                <button type="button" class="btn btn-primary" id="calculateBtn">Calcular</button>
+            <div class="card border-0 shadow-sm action-buttons no-print mb-4">
+                <div class="card-body d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                    <button type="reset" class="btn btn-outline-secondary flex-fill flex-sm-none px-4">Limpiar</button>
+                    <button type="button" class="btn btn-primary flex-fill flex-sm-none px-4" id="calculateBtn">
+                        <i class="fas fa-calculator me-1"></i> Calcular
+                    </button>
+                </div>
             </div>
         </form>
     </div>
+
+    <footer class="text-center py-3">
+        <small class="text-muted">Desarrollado por JCL</small>
+    </footer>
 
 <div class="modal fade" id="arsenalModal" tabindex="-1" aria-labelledby="arsenalModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="arsenalModalLabel"><i class="fas fa-capsules me-2"></i>Cat�logo de Arsenal</h5>
+        <h5 class="modal-title" id="arsenalModalLabel"><i class="fas fa-capsules me-2"></i>Catálogo de Arsenal</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <div class="arsenal-toolbar d-flex flex-column flex-md-row gap-2 mb-3">
           <div class="input-group">
             <span class="input-group-text"><i class="fas fa-search"></i></span>
-            <input type="search" class="form-control" id="arsenalSearch" placeholder="Buscar por c�digo o nombre">
+            <input type="search" class="form-control" id="arsenalSearch" placeholder="Buscar por código o nombre">
           </div>
           <button class="btn btn-success" type="button" id="arsenalAddBtn">
             <i class="fas fa-plus me-1"></i> Nuevo
@@ -429,7 +455,7 @@
           <table class="table table-striped align-middle" id="arsenalTable">
             <thead>
               <tr>
-                <th style="width:120px">C�digo</th>
+                <th style="width:120px">Código</th>
                 <th>Nombre</th>
                 <th style="width:150px">Acciones</th>
               </tr>
@@ -440,9 +466,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-outline-primary" id="arsenalExportBtn">
-          <i class="fas fa-download me-1"></i> Exportar JSON
-        </button>
         <button type="button" class="btn btn-primary" id="arsenalSaveFileBtn">
           <i class="fas fa-save me-1"></i> Guardar en archivo
         </button>
@@ -460,7 +483,7 @@
       <div class="modal-body">
         <form id="arsenalForm">
           <div class="mb-3">
-            <label class="form-label">C�digo</label>
+            <label class="form-label">Código</label>
             <input type="text" class="form-control" id="arsenalCodigo" required>
           </div>
           <div class="mb-3">
@@ -514,9 +537,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-outline-primary" id="configExportBtn">
-          <i class="fas fa-download me-1"></i> Exportar JSON
-        </button>
         <button type="button" class="btn btn-primary" id="configSaveFileBtn">
           <i class="fas fa-save me-1"></i> Guardar en archivo
         </button>
@@ -556,6 +576,64 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="button" class="btn btn-primary" id="configSaveOptionBtn">
           <i class="fas fa-save me-1"></i> Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="maintainerModal" tabindex="-1" aria-labelledby="maintainerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="maintainerModalLabel"><i class="fas fa-toolbox me-2"></i>Mantenedor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">Seleccione una opción para administrar catálogos o usuarios.</p>
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-outline-dark d-none" id="maintainerUsersBtn">
+            <i class="fas fa-users me-1"></i> Gestionar usuarios
+          </button>
+          <button type="button" class="btn btn-outline-primary" id="maintainerArsenalBtn">
+            <i class="fas fa-capsules me-1"></i> Administrar arsenal
+          </button>
+          <button type="button" class="btn btn-outline-success" id="maintainerConfigBtn">
+            <i class="fas fa-sliders-h me-1"></i> Configurar listas
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="adminAccessModal" tabindex="-1" aria-labelledby="adminAccessModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminAccessModalLabel">Acceso restringido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger d-none" id="adminAccessError">Usuario o contraseña incorrectos</div>
+        <form id="adminAccessForm">
+          <div class="mb-3">
+            <label for="adminUser" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="adminUser" autocomplete="username" required>
+          </div>
+          <div class="mb-3">
+            <label for="adminPass" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="adminPass" autocomplete="current-password" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="adminAccessSubmit" form="adminAccessForm">
+          <i class="fas fa-lock-open me-1"></i> Acceder
         </button>
       </div>
     </div>

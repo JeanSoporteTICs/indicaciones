@@ -7,30 +7,56 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Cama 1",
-            "label": "Cama 1"
-        },
-        {
-            "value": "Cama 2",
-            "label": "Cama 2"
-        },
-        {
-            "value": "Cama 3",
-            "label": "Cama 3"
-        },
-        {
-            "value": "Cama 4",
-            "label": "Cama 4"
-        },
-        {
-            "value": "Cama 5",
-            "label": "Cama 52",
+            "value": "UCI 1",
+            "label": "UCI 1",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "asd1",
-            "label": "asd1",
+            "value": "UCI 2",
+            "label": "UCI 2",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UCI 3",
+            "label": "UCI 3",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UCI 4",
+            "label": "UCI 4",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UTI 1",
+            "label": "UTI 1",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UTI 2",
+            "label": "UTI 2",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UTI 3",
+            "label": "UTI 3",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UTI 4",
+            "label": "UTI 4",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "UTI 5",
+            "label": "UTI 5",
             "disabled": false,
             "selected": false
         }
@@ -43,12 +69,16 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Masculino",
-            "label": "Masculino"
+            "value": "M",
+            "label": "Masculino",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "Femenino",
-            "label": "Femenino"
+            "value": "F",
+            "label": "Femenino",
+            "disabled": false,
+            "selected": false
         }
     ],
     "aislamiento": [
@@ -59,20 +89,34 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Ninguno",
-            "label": "Ninguno"
+            "value": "GOTITAS",
+            "label": "GOTITAS",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "Contacto",
-            "label": "Contacto"
+            "value": "INMUNOSUPRIMIDO",
+            "label": "INMUNOSUPRIMIDO",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "AÃ©reo",
-            "label": "AÃ©reo"
+            "value": "GOTITAS +CONTACTO",
+            "label": "GOTITAS +CONTACTO",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "GotÃ­culas",
-            "label": "GotÃ­culas"
+            "value": "CONTACTO",
+            "label": "CONTACTO",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESTANDAR",
+            "label": "ESTANDAR",
+            "disabled": false,
+            "selected": false
         }
     ],
     "vm": [
@@ -83,16 +127,22 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Ninguno",
-            "label": "Ninguno"
+            "value": "VMI",
+            "label": "VMI",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "VM Standard",
-            "label": "VM Standard"
+            "value": "VNI BIPAP",
+            "label": "VNI BIPAP",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "VM Avanzado",
-            "label": "VM Avanzado"
+            "value": "VNI CPAP",
+            "label": "VNI CPAP",
+            "disabled": false,
+            "selected": false
         }
     ],
     "sa": [
@@ -103,16 +153,100 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Ninguno",
-            "label": "Ninguno"
+            "value": "ESQUEMA 1  FENTANILO Paj   AMPOLLA  0,5mg\/10ml-MIDAZOLAM PI  AMPOLLA 50mg\/10ml",
+            "label": "ESQUEMA 1  FENTANILO Paj   AMPOLLA  0,5mg\/10ml-MIDAZOLAM PI  AMPOLLA 50mg\/10ml",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "SA BÃ¡sico",
-            "label": "SA BÃ¡sico"
+            "value": "ESQUEMA 2: MORFINA PI AMPOLLA 10mg\/ml - MIDAZOLAM PI AMPOLLA 50 mg\/10ml",
+            "label": "ESQUEMA 2: MORFINA PI AMPOLLA 10mg\/ml - MIDAZOLAM PI AMPOLLA 50 mg\/10ml",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "SA Avanzado",
-            "label": "SA Avanzado"
+            "value": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml-MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "label": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml-MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "label": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "label": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "label": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "label": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 5: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOL PT AMPOLLA  200mg\/20ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "label": "ESQUEMA 5: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOL PT AMPOLLA  200mg\/20ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 6: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOLPT AMPOLLA  200mg\/20ml-KETAMINA PI FRASCO AMPOLLA 500mg\/10ml",
+            "label": "ESQUEMA 6: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOLPT AMPOLLA  200mg\/20ml-KETAMINA PI FRASCO AMPOLLA 500mg\/10ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg\/50ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml - FENTANILO PAJ AMPOLLA 0,5mg\/10ML",
+            "label": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg\/50ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml - FENTANILO PAJ AMPOLLA 0,5mg\/10ML",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml -MIDAZOLAM PI    AMPOLLA 50mg\/10ml - MORFINA PI AMPOLLA 10mg\/ml",
+            "label": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml -MIDAZOLAM PI    AMPOLLA 50mg\/10ml - MORFINA PI AMPOLLA 10mg\/ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 8: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml- FENTANILO PAJ AMPOLLA 0,5MG\/10ML - PROPOFOL PT  AMPOLLA 200MG\/20ML",
+            "label": "ESQUEMA 8: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml- FENTANILO PAJ AMPOLLA 0,5MG\/10ML - PROPOFOL PT  AMPOLLA 200MG\/20ML",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA 9: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml-KETAMINA PI FRASCO AMPOLLA  500MG\/10ML - PROPOFOL PT AMPOLLA  200MG\/20ML",
+            "label": "ESQUEMA 9: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml-KETAMINA PI FRASCO AMPOLLA  500MG\/10ML - PROPOFOL PT AMPOLLA  200MG\/20ML",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA : DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml",
+            "label": "ESQUEMA : DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml- PROPOFOL PT  AMPOLLA  200MG\/20ML",
+            "label": "ESQUEMA: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml- PROPOFOL PT  AMPOLLA  200MG\/20ML",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA: DEXMEDETOMIDINA PI  FRASCO AMPOLLA  200mcg\/50ml- FENTANILO PAJ AMPOLLA  0,5MG\/10ML",
+            "label": "ESQUEMA: DEXMEDETOMIDINA PI  FRASCO AMPOLLA  200mcg\/50ml- FENTANILO PAJ AMPOLLA  0,5MG\/10ML",
+            "disabled": false,
+            "selected": false
         }
     ],
     "esc": [
@@ -123,20 +257,64 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "Ninguno",
-            "label": "Ninguno"
+            "value": "1",
+            "label": "1",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "ESC 1",
-            "label": "ESC 1"
+            "value": "2",
+            "label": "2",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "ESC 2",
-            "label": "ESC 2"
+            "value": "3",
+            "label": "3",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "ESC 3",
-            "label": "ESC 3"
+            "value": "4",
+            "label": "4",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "5",
+            "label": "5",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "6",
+            "label": "6",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "7",
+            "label": "7",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "8",
+            "label": "8",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "9",
+            "label": "9",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "10",
+            "label": "10",
+            "disabled": false,
+            "selected": false
         }
     ],
     "rass": [
@@ -147,44 +325,22 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "-5 (Sin respuesta)",
-            "label": "-5 (Sin respuesta)"
+            "value": "-1 a -2 sedación leve",
+            "label": "-1 a -2 sedación leve",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "-4 (Solo a dolor)",
-            "label": "-4 (Solo a dolor)"
+            "value": "-3 sedación moderada",
+            "label": "-3 sedación moderada",
+            "disabled": false,
+            "selected": false
         },
         {
-            "value": "-3 (Solo a verbal)",
-            "label": "-3 (Solo a verbal)"
-        },
-        {
-            "value": "-2 (Despierto con estÃ­mulo)",
-            "label": "-2 (Despierto con estÃ­mulo)"
-        },
-        {
-            "value": "-1 (Alerta breve)",
-            "label": "-1 (Alerta breve)"
-        },
-        {
-            "value": "0 (Alerta y calmado)",
-            "label": "0 (Alerta y calmado)"
-        },
-        {
-            "value": "+1 (Ansioso)",
-            "label": "+1 (Ansioso)"
-        },
-        {
-            "value": "+2 (Agitado)",
-            "label": "+2 (Agitado)"
-        },
-        {
-            "value": "+3 (Muy agitado)",
-            "label": "+3 (Muy agitado)"
-        },
-        {
-            "value": "+4 (Combativo)",
-            "label": "+4 (Combativo)"
+            "value": "-4 a -5 sedación profunda",
+            "label": "-4 a -5 sedación profunda",
+            "disabled": false,
+            "selected": false
         }
     ]
 };

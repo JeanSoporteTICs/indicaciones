@@ -23,6 +23,7 @@ class Paciente {
       medicoResponsable: '',
       diagnostico: '',
       volumenHolliday: 0,
+      sesentaHolliday: 0,
       volumenSC: 0,
       crea: 0,
       vfg: 0,
@@ -72,6 +73,7 @@ class Paciente {
       medicoResponsable: val('medicoResponsable'),
       diagnostico:       val('diagnostico'),
       crea:              parseFloat(val('crea')) || 0,
+      sesentaHolliday:   parseFloat(val('60Holliday')) || 0,
       reposo:   chk('reposo'),
       la:       chk('la'),
       sng:      chk('sng'),
@@ -89,6 +91,7 @@ class Paciente {
       rass:       val('rass'),
       fechaReceta: val('fechaReceta')
     });
+    this._data.fechaReceta = this._data.fecha;
 
     // Medicamentos: ahora viene de la tabla Ãºnica #medicamentos
     this._data.medicamentos = [];
@@ -136,7 +139,13 @@ class Paciente {
     set('medicoResponsable',this._data.medicoResponsable);
     set('diagnostico',this._data.diagnostico);
 
+    this._data.fechaReceta = this._data.fecha || this._data.fechaReceta || '';
+    set('fechaReceta',this._data.fechaReceta);
+    const vh = parseFloat(this._data.volumenHolliday) || 0;
+    this._data.volumenHolliday = vh;
+    this._data.sesentaHolliday = vh * 0.6;
     set('volumenHolliday',(this._data.volumenHolliday||0).toFixed(2));
+    set('60Holliday',(this._data.sesentaHolliday||0).toFixed(2));
     set('volumenSC',(this._data.volumenSC||0).toFixed(2));
     set('crea',this._data.crea);
     set('vfg',(this._data.vfg||0).toFixed(2));
@@ -278,10 +287,15 @@ class Paciente {
 
   calcularVolumenHolliday(){
     const {peso} = this._data;
-    if (!peso) return 0;
+    if (!peso){
+      this._data.volumenHolliday = 0;
+      this._data.sesentaHolliday = 0;
+      return 0;
+    }
     if (peso<=10) this._data.volumenHolliday = peso*100;
     else if (peso<=20) this._data.volumenHolliday = 1000 + (peso-10)*50;
     else this._data.volumenHolliday = 1500 + (peso-20)*20;
+    this._data.sesentaHolliday = this._data.volumenHolliday * 0.6;
     return this._data.volumenHolliday;
   }
 
@@ -359,6 +373,7 @@ class Paciente {
 
 let pacienteActual = new Paciente();
 const importState = { isImported: false, fileName: '' };
+const searchableSelectRegistry = new Map();
 
 function setImportedState(flag, fileName = ''){
   importState.isImported = !!flag;
@@ -370,15 +385,24 @@ function populateSelectsFromConfig(){
   Object.entries(window.SelectConfig).forEach(([id, options])=>{
     const select = document.getElementById(id);
     if (!select) return;
+    const previousValue = select.value;
     select.innerHTML = '';
+    let hasExplicitSelection = false;
     options.forEach(opt=>{
       const option = document.createElement('option');
       option.value = opt.value ?? '';
       option.textContent = opt.label ?? '';
       if (opt.disabled) option.disabled = true;
-      if (opt.selected) option.selected = true;
+      if (opt.selected){
+        option.selected = true;
+        hasExplicitSelection = true;
+      }
       select.appendChild(option);
     });
+    if (!hasExplicitSelection && previousValue){
+      select.value = previousValue;
+    }
+    ensureSearchableSelect(select, options);
   });
 }
 
@@ -443,6 +467,136 @@ function hideMedicamentoSuggestions(wrapper){
   const panel = wrapper.querySelector('.medicamento-suggestions');
   if (panel){
     panel.classList.remove('show');
+  }
+}
+
+function ensureSearchableSelect(select, configOptions){
+  if (!select || !Array.isArray(configOptions)) return;
+  const normalizedOptions = configOptions.map(opt=>({
+    value: opt.value ?? '',
+    label: opt.label ?? opt.value ?? '',
+    disabled: !!opt.disabled,
+    selected: !!opt.selected
+  }));
+  let entry = searchableSelectRegistry.get(select);
+  if (!entry){
+    entry = createSearchableSelectWrapper(select);
+    searchableSelectRegistry.set(select, entry);
+  }
+  entry.options = normalizedOptions;
+  entry.placeholder = getSearchableSelectPlaceholder(normalizedOptions);
+  updateSearchableSelectInput(entry);
+}
+
+function createSearchableSelectWrapper(select){
+  select.classList.add('d-none');
+  const wrapper = document.createElement('div');
+  wrapper.className = 'medicamento-input-wrapper searchable-select';
+  select.insertAdjacentElement('afterend', wrapper);
+
+  const icon = document.createElement('i');
+  icon.className = 'fas fa-search medicamento-input-icon';
+  wrapper.appendChild(icon);
+
+  const input = document.createElement('input');
+  input.type = 'search';
+  input.className = 'form-control medicamento-input';
+  input.placeholder = select.dataset.placeholder || 'Buscar opción';
+  input.autocomplete = 'off';
+  wrapper.appendChild(input);
+
+  const panel = document.createElement('div');
+  panel.className = 'medicamento-suggestions';
+  wrapper.appendChild(panel);
+
+  input.addEventListener('input', ()=>renderSearchableSelectSuggestions(select));
+  input.addEventListener('focus', ()=>renderSearchableSelectSuggestions(select));
+  input.addEventListener('blur', ()=>setTimeout(()=>hideMedicamentoSuggestions(wrapper),120));
+  input.addEventListener('change', ()=>commitSearchableInputValue(select));
+
+  return { wrapper, input, panel, options: [], select, placeholder: '' };
+}
+
+function getSearchableSelectPlaceholder(options){
+  const placeholderOpt = options.find(opt => opt.disabled && opt.selected) ||
+    options.find(opt => opt.disabled && (opt.value === '' || opt.value === null));
+  return placeholderOpt ? (placeholderOpt.label || placeholderOpt.value || '') : '';
+}
+
+function renderSearchableSelectSuggestions(select){
+  const entry = searchableSelectRegistry.get(select);
+  if (!entry) return;
+  const term = (entry.input.value || '').toLowerCase();
+  const panel = entry.panel;
+  panel.innerHTML = '';
+  const matches = entry.options
+    .filter(opt=>{
+      if (opt.disabled) return false;
+      if (!term) return true;
+      return (opt.label || '').toLowerCase().includes(term) || (opt.value || '').toLowerCase().includes(term);
+    })
+    .slice(0, MEDICAMENTO_SUGGESTION_LIMIT);
+  if (!matches.length){
+    const empty = document.createElement('div');
+    empty.className = 'medicamento-suggestion-empty';
+    empty.textContent = 'Sin resultados';
+    panel.appendChild(empty);
+  } else {
+    matches.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'medicamento-suggestion';
+      btn.textContent = opt.label || opt.value || '(sin etiqueta)';
+      btn.dataset.value = opt.value || '';
+      btn.addEventListener('mousedown', ev=>{
+        ev.preventDefault();
+        pickSearchableSelectOption(select, opt);
+      });
+      panel.appendChild(btn);
+    });
+  }
+  panel.classList.add('show');
+}
+
+function pickSearchableSelectOption(select, option){
+  const entry = searchableSelectRegistry.get(select);
+  if (!entry) return;
+  select.value = option.value || '';
+  entry.input.value = option.label || option.value || '';
+  entry.input.placeholder = entry.placeholder || entry.input.placeholder;
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+  hideMedicamentoSuggestions(entry.wrapper);
+}
+
+function commitSearchableInputValue(select){
+  const entry = searchableSelectRegistry.get(select);
+  if (!entry) return;
+  const value = (entry.input.value || '').toLowerCase();
+  const match = entry.options.find(opt =>
+    (opt.label || '').toLowerCase() === value ||
+    (opt.value || '').toLowerCase() === value
+  );
+  if (match){
+    pickSearchableSelectOption(select, match);
+  } else {
+    updateSearchableSelectInput(entry);
+  }
+}
+
+function updateSearchableSelectInput(entry){
+  const selectValue = entry.select.value;
+  if ((!selectValue || selectValue === '') && entry.placeholder){
+    entry.input.value = '';
+    entry.input.placeholder = entry.placeholder;
+    return;
+  }
+  const current = entry.options.find(opt => opt.value === selectValue);
+  if (current){
+    entry.input.value = current.label || current.value || '';
+    entry.input.placeholder = entry.placeholder || entry.input.placeholder;
+  } else {
+    entry.input.value = '';
+    entry.input.placeholder = entry.placeholder || entry.input.placeholder;
   }
 }
 
@@ -553,6 +707,14 @@ function removeRow(btn){
   tr?.parentNode.removeChild(tr);
 }
 
+function syncFechaReceta(){
+  const fecha = document.getElementById('fecha');
+  const fechaReceta = document.getElementById('fechaReceta');
+  if (fecha && fechaReceta){
+    fechaReceta.value = fecha.value || '';
+  }
+}
+
 function showAppModal(message, title='Aviso'){
   const modalEl = document.getElementById('appModal');
   if (!modalEl){
@@ -593,7 +755,7 @@ function guardarDatos(){
     return;
   }
   if (!importState.isImported){
-    alert('Esta acciÃ³n solo aplica a archivos cargados.');
+    alert('Esta acción solo aplica a archivos cargados.');
     return;
   }
   pacienteActual.cargarDesdeFormulario();
@@ -796,6 +958,8 @@ const arsenalState = {
     : [],
   filtro: ''
 };
+const adminAccessState = { granted: false, pendingAction: null, pendingRoles: null, user: null };
+const ADMIN_SESSION_KEY = 'adminAccessSession';
 
 function cloneSelectConfig(){
   const source = window.SelectConfig || {};
@@ -941,6 +1105,13 @@ function saveConfigOption(){
     return;
   }
   const list = configState.data[configState.currentKey] || [];
+  if (selected){
+    list.forEach((item, idx)=>{
+      if (idx !== configState.editingIndex){
+        item.selected = false;
+      }
+    });
+  }
   const record = { value, label, disabled, selected };
   if (configState.editingIndex >= 0){
     list[configState.editingIndex] = record;
@@ -980,16 +1151,6 @@ async function saveConfigToServer(){
   if (modalEl){
     bootstrap.Modal.getOrCreateInstance(modalEl).hide();
   }
-}
-
-function exportConfig(){
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(configState.data,null,2));
-  const link = document.createElement('a');
-  link.href = dataStr;
-  link.download = 'select_config.json';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 }
 
 async function saveArsenalToServer(){
@@ -1114,34 +1275,220 @@ function openArsenalModal(){
   }
 }
 
-function exportArsenal(){
-  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(arsenalState.lista, null, 2));
-  const link = document.createElement('a');
-  link.href = dataStr;
-  link.download = 'arsenal.json';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+// =========================
+// Control de acceso admin
+// =========================
+async function authenticateAdmin(username, password){
+  const resp = await fetch('usuarios/usuarios_control.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'login', username, password })
+  });
+  const data = await resp.json();
+  if (!resp.ok || !data.success){
+    throw new Error(data.error || 'Credenciales incorrectas');
+  }
+  return data;
+}
+
+function requireAdminAccess(action, allowedRoles = ['admin']){
+  const normalizedRoles = Array.isArray(allowedRoles) && allowedRoles.length
+    ? allowedRoles.map(r => (r || '').toLowerCase())
+    : null;
+  const hasRole = () => {
+    if (!normalizedRoles) return true;
+    const role = (adminAccessState.user?.rol || '').toLowerCase();
+    return normalizedRoles.includes(role);
+  };
+  if (adminAccessState.granted){
+    if (!hasRole()){
+      alert('No tiene permisos para esta acción.');
+      return;
+    }
+    adminAccessState.pendingAction = null;
+    adminAccessState.pendingRoles = null;
+    action?.();
+    return;
+  }
+  adminAccessState.pendingAction = action;
+  adminAccessState.pendingRoles = normalizedRoles;
+  openAdminAccessModal();
+}
+
+function openAdminAccessModal(){
+  const modalEl = document.getElementById('adminAccessModal');
+  if (!modalEl){
+    alert('No se puede validar el acceso de administrador.');
+    return;
+  }
+  document.getElementById('adminAccessError')?.classList.add('d-none');
+  document.getElementById('adminAccessForm')?.reset();
+  const modal = window.bootstrap?.Modal?.getOrCreateInstance(modalEl);
+  if (modal){
+    modal.show();
+  } else {
+    modalEl.classList.add('show');
+    modalEl.style.display = 'block';
+  }
+  setTimeout(()=>document.getElementById('adminUser')?.focus(), 150);
+}
+
+async function handleAdminAccessSubmit(e){
+  e?.preventDefault?.();
+  const user = document.getElementById('adminUser')?.value?.trim() || '';
+  const pass = document.getElementById('adminPass')?.value || '';
+  const error = document.getElementById('adminAccessError');
+  const submitBtn = document.getElementById('adminAccessSubmit');
+  error?.classList.add('d-none');
+  if (!user || !pass){
+    error?.classList.remove('d-none');
+    if (error) error.textContent = 'Ingrese usuario y contraseña';
+    return;
+  }
+  submitBtn?.setAttribute('disabled', 'disabled');
+  try {
+    const data = await authenticateAdmin(user, pass);
+    adminAccessState.granted = true;
+    adminAccessState.user = data.user || null;
+    const role = (adminAccessState.user?.rol || '').toLowerCase();
+    const pendingRoles = adminAccessState.pendingRoles;
+    if (pendingRoles && pendingRoles.length && !pendingRoles.includes(role)){
+      error?.classList.remove('d-none');
+      if (error) error.textContent = 'Su rol no tiene permisos para esta acción.';
+      adminAccessState.granted = false;
+      adminAccessState.user = null;
+      adminAccessState.pendingAction = null;
+      adminAccessState.pendingRoles = null;
+      persistAdminSession();
+      updateSessionUI();
+      return;
+    }
+    const modalEl = document.getElementById('adminAccessModal');
+    const modal = window.bootstrap?.Modal?.getOrCreateInstance(modalEl);
+    if (modal){
+      modal.hide();
+    } else if (modalEl){
+      modalEl.classList.remove('show');
+      modalEl.style.display = 'none';
+    }
+    const action = adminAccessState.pendingAction;
+    adminAccessState.pendingAction = null;
+    adminAccessState.pendingRoles = null;
+    persistAdminSession();
+    updateSessionUI();
+    action?.();
+  } catch(err){
+    error?.classList.remove('d-none');
+    if (error) error.textContent = err.message || 'Usuario o contraseña incorrectos';
+    document.getElementById('adminPass')?.focus();
+  } finally {
+    submitBtn?.removeAttribute('disabled');
+  }
+}
+
+function persistAdminSession(){
+  try {
+    if (adminAccessState.granted && adminAccessState.user){
+      const payload = {
+        user: adminAccessState.user,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(payload));
+    } else {
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+    }
+  } catch(err){
+    console.warn('No se pudo guardar la sesión:', err);
+  }
+}
+
+function restoreAdminSession(){
+  try {
+    const raw = localStorage.getItem(ADMIN_SESSION_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data?.user){
+      adminAccessState.granted = true;
+      adminAccessState.user = data.user;
+    }
+  } catch(err){
+    console.warn('No se pudo restaurar la sesión:', err);
+  }
+  updateSessionUI();
+}
+
+function updateSessionUI(){
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn){
+    logoutBtn.classList.toggle('d-none', !adminAccessState.granted);
+  }
+}
+
+function logoutAdmin(){
+  adminAccessState.granted = false;
+  adminAccessState.user = null;
+  adminAccessState.pendingAction = null;
+  adminAccessState.pendingRoles = null;
+  persistAdminSession();
+  updateSessionUI();
+  closeMaintainerMenu();
+}
+
+function openMaintainerMenu(){
+  const modalEl = document.getElementById('maintainerModal');
+  if (!modalEl){
+    alert('No se encontró el módulo de mantenedor.');
+    return;
+  }
+  const role = (adminAccessState.user?.rol || '').toLowerCase();
+  const usersBtn = document.getElementById('maintainerUsersBtn');
+  if (usersBtn){
+    usersBtn.classList.toggle('d-none', role !== 'admin');
+  }
+  bootstrap.Modal.getOrCreateInstance(modalEl).show();
+}
+
+function closeMaintainerMenu(){
+  const modalEl = document.getElementById('maintainerModal');
+  if (modalEl){
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+  }
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('openArsenalBtn')?.addEventListener('click', openArsenalModal);
+  restoreAdminSession();
+  updateSessionUI();
+  document.getElementById('logoutBtn')?.addEventListener('click', logoutAdmin);
+  document.getElementById('openMaintainerBtn')?.addEventListener('click', ()=>requireAdminAccess(openMaintainerMenu, ['admin','editor']));
   document.getElementById('arsenalAddBtn')?.addEventListener('click', ()=>openArsenalForm());
   document.getElementById('arsenalSaveBtn')?.addEventListener('click', saveArsenalForm);
-  document.getElementById('arsenalExportBtn')?.addEventListener('click', exportArsenal);
   document.getElementById('arsenalSaveFileBtn')?.addEventListener('click', saveArsenalToServer);
   document.getElementById('arsenalSearch')?.addEventListener('input', e=>{
     arsenalState.filtro = e.target.value || '';
     renderArsenalTable();
   });
-  document.getElementById('openConfigBtn')?.addEventListener('click', openConfigModal);
   document.getElementById('configAddOptionBtn')?.addEventListener('click', ()=>openConfigOptionModal());
   document.getElementById('configSaveOptionBtn')?.addEventListener('click', saveConfigOption);
-  document.getElementById('configExportBtn')?.addEventListener('click', exportConfig);
   document.getElementById('configSaveFileBtn')?.addEventListener('click', saveConfigToServer);
   document.getElementById('configListSelector')?.addEventListener('change', e=>{
     configState.currentKey = e.target.value;
     renderConfigTable();
+  });
+  document.getElementById('adminAccessForm')?.addEventListener('submit', handleAdminAccessSubmit);
+  document.getElementById('maintainerUsersBtn')?.addEventListener('click', ()=>{
+    closeMaintainerMenu();
+    const win = window.open('usuarios/usuarios.php', '_blank', 'noopener');
+    if (!win){
+      window.location.href = 'usuarios/usuarios.php';
+    }
+  });
+  document.getElementById('maintainerArsenalBtn')?.addEventListener('click', ()=>{
+    closeMaintainerMenu();
+    openArsenalModal();
+  });
+  document.getElementById('maintainerConfigBtn')?.addEventListener('click', ()=>{
+    closeMaintainerMenu();
+    openConfigModal();
   });
 
   populateSelectsFromConfig();
@@ -1151,6 +1498,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('fechaReceta').value = hoy.toISOString().split('T')[0];
   document.getElementById('hora').value = hoy.toTimeString().substring(0,5);
   setImportedState(false);
+  document.getElementById('fecha')?.addEventListener('change', syncFechaReceta);
+  document.getElementById('fecha')?.addEventListener('input', syncFechaReceta);
+  syncFechaReceta();
 
   const tbody = document.querySelector('#medicamentos tbody');
   if (tbody){
