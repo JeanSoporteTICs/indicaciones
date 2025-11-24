@@ -881,6 +881,40 @@ function toggleAddMedicButton(forceHide=false){
   btn.classList.toggle('d-none', shouldHide);
 }
 
+function sortArsenalList(list){
+  const dir = arsenalState.sortDir === 'asc' ? 1 : -1;
+  return [...list].sort((a,b)=>{
+    if (arsenalState.sortBy === 'codigo'){
+      const numA = parseInt(a.codigo,10);
+      const numB = parseInt(b.codigo,10);
+      const validNums = !Number.isNaN(numA) && !Number.isNaN(numB);
+      if (validNums && numA !== numB){
+        return numA > numB ? dir : -dir;
+      }
+      return ((a.codigo || '').localeCompare(b.codigo || '')) * dir;
+    }
+    return ((a.nombre || '').localeCompare(b.nombre || '')) * dir;
+  });
+}
+
+function applyArsenalSortOrder(){
+  arsenalState.lista = sortArsenalList(arsenalState.lista);
+}
+
+function updateArsenalSortIndicators(){
+  document.querySelectorAll('.arsenal-sort').forEach(btn=>{
+    const sortKey = btn.dataset.sort;
+    const icon = btn.querySelector('i');
+    if (!icon) return;
+    icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
+    if (arsenalState.sortBy === sortKey){
+      icon.classList.add(arsenalState.sortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+    } else {
+      icon.classList.add('fa-sort');
+    }
+  });
+}
+
 // Si quieres reutilizarla fuera de la clase:
 function readMedicamentosTo(p) {
   p.medicamentos = [];
@@ -1005,9 +1039,11 @@ const arsenalState = {
   lista: Array.isArray(window.ArsenalCatalog?.medicamentos)
     ? [...window.ArsenalCatalog.medicamentos]
     : [],
-  filtro: ''
+  filtro: '',
+  sortBy: 'nombre',
+  sortDir: 'asc'
 };
-const adminAccessState = { granted: false, pendingAction: null, pendingRoles: null, user: null };
+const adminAccessState = { granted: false, pendingAction: null, pendingRoles: null, user: null, timer: null };
 const ADMIN_SESSION_KEY = 'adminAccessSession';
 
 function cloneSelectConfig(){
@@ -1221,13 +1257,12 @@ function renderArsenalTable(){
   if (!tbody) return;
   const term = (arsenalState.filtro || '').toLowerCase();
   tbody.innerHTML = '';
-  arsenalState.lista
-    .filter(item => {
-      if (!term) return true;
-      return (item.codigo || '').toLowerCase().includes(term) || (item.nombre || '').toLowerCase().includes(term);
-    })
-    .sort((a,b)=> (a.nombre || '').localeCompare(b.nombre || ''))
-    .forEach(item=>{
+  const filtered = arsenalState.lista.filter(item => {
+    if (!term) return true;
+    return (item.codigo || '').toLowerCase().includes(term) || (item.nombre || '').toLowerCase().includes(term);
+  });
+  const sorted = sortArsenalList(filtered);
+  sorted.forEach(item=>{
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="fw-semibold">${item.codigo || ''}</td>
@@ -1243,6 +1278,7 @@ function renderArsenalTable(){
       tr.querySelector('[data-action="remove"]').addEventListener('click',()=>removeArsenalItem(item.codigo));
       tbody.appendChild(tr);
     });
+  updateArsenalSortIndicators();
 }
 
 function openArsenalForm(item=null){
@@ -1301,6 +1337,7 @@ function removeArsenalItem(codigo){
 }
 
 function updateMedicamentoCache(){
+  applyArsenalSortOrder();
   window.ArsenalCatalog.medicamentos = [...arsenalState.lista];
   refreshMedicamentoInputs();
 }
@@ -1412,6 +1449,7 @@ async function handleAdminAccessSubmit(e){
       updateSessionUI();
       return;
     }
+    scheduleAdminAutoLogout();
     const modalEl = document.getElementById('adminAccessModal');
     const modal = window.bootstrap?.Modal?.getOrCreateInstance(modalEl);
     if (modal){
@@ -1471,6 +1509,9 @@ function updateSessionUI(){
   if (logoutBtn){
     logoutBtn.classList.toggle('d-none', !adminAccessState.granted);
   }
+  if (adminAccessState.granted){
+    scheduleAdminAutoLogout();
+  }
 }
 
 function logoutAdmin(){
@@ -1478,9 +1519,16 @@ function logoutAdmin(){
   adminAccessState.user = null;
   adminAccessState.pendingAction = null;
   adminAccessState.pendingRoles = null;
+  clearTimeout(adminAccessState.timer);
   persistAdminSession();
   updateSessionUI();
   closeMaintainerMenu();
+}
+
+function scheduleAdminAutoLogout(){
+  clearTimeout(adminAccessState.timer);
+  const FIVE_MIN = 5 * 60 * 1000;
+  adminAccessState.timer = setTimeout(()=>logoutAdmin(), FIVE_MIN);
 }
 
 function openMaintainerMenu(){
@@ -1538,6 +1586,19 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('maintainerConfigBtn')?.addEventListener('click', ()=>{
     closeMaintainerMenu();
     openConfigModal();
+  });
+  document.querySelectorAll('.arsenal-sort').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const sortKey = btn.dataset.sort;
+      if (!sortKey) return;
+      if (arsenalState.sortBy === sortKey){
+        arsenalState.sortDir = arsenalState.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        arsenalState.sortBy = sortKey;
+        arsenalState.sortDir = 'asc';
+      }
+      renderArsenalTable();
+    });
   });
 
   populateSelectsFromConfig();

@@ -455,8 +455,18 @@
           <table class="table table-striped align-middle" id="arsenalTable">
             <thead>
               <tr>
-                <th style="width:120px">Código</th>
-                <th>Nombre</th>
+                <th style="width:150px">
+                  <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 d-inline-flex align-items-center arsenal-sort" data-sort="codigo">
+                    <span class="fw-semibold me-1">Código</span>
+                    <i class="fas fa-sort"></i>
+                  </button>
+                </th>
+                <th>
+                  <button type="button" class="btn btn-link btn-sm text-decoration-none p-0 d-inline-flex align-items-center arsenal-sort" data-sort="nombre">
+                    <span class="fw-semibold me-1">Nombre</span>
+                    <i class="fas fa-sort"></i>
+                  </button>
+                </th>
                 <th style="width:150px">Acciones</th>
               </tr>
             </thead>
