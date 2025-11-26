@@ -32,8 +32,8 @@ class Paciente {
       la: false,
       sng: false,
       sf: false,
-      du: false,
-      bh: false,
+      du: "",
+      bh: "",
       cvc: false,
       aislamiento: '',
       regimen: '',
@@ -78,8 +78,8 @@ class Paciente {
       la:       chk('la'),
       sng:      chk('sng'),
       sf:       chk('sf'),
-      du:       chk('du'),
-      bh:       chk('bh'),
+      du:       val("du"),
+      bh:       val("bh"),
       cvc:      chk('cvc'),
       aislamiento: val('aislamiento'),
       regimen:     val('regimen'),
@@ -156,8 +156,8 @@ class Paciente {
     setChk('la',this._data.la);
     setChk('sng',this._data.sng);
     setChk('sf',this._data.sf);
-    setChk('du',this._data.du);
-    setChk('bh',this._data.bh);
+    set("du",this._data.du);
+    set("bh",this._data.bh);
     setChk('cvc',this._data.cvc);
 
     set('aislamiento',this._data.aislamiento);
@@ -821,11 +821,16 @@ async function cargarExcelDesdeArchivo(file){
 function nuevoFormulario(){
   if(!confirm('Â¿Crear nuevo formulario?')) return;
   pacienteActual = new Paciente();
-  document.getElementById('hospitalizacionForm').reset();
-
-  const tablaRecetas = document.querySelector('#tablaRecetas tbody');
-  if (tablaRecetas){
-    tablaRecetas.innerHTML = '';
+  document.getElementById('hospitalizacionForm').reset();
+
+
+
+  const tablaRecetas = document.querySelector('#tablaRecetas tbody');
+
+  if (tablaRecetas){
+
+    tablaRecetas.innerHTML = '';
+
   }
 
   // Reiniciar tabla de medicamentos con una fila vacÃ­a

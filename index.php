@@ -263,14 +263,6 @@
                                     <label class="form-check-label ms-2" for="sf">SF</label>
                                 </div>
                                 <div class="checkbox-item">
-                                    <input class="form-check-input" type="checkbox" id="du">
-                                    <label class="form-check-label ms-2" for="du">DU</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input class="form-check-input" type="checkbox" id="bh">
-                                    <label class="form-check-label ms-2" for="bh">BH</label>
-                                </div>
-                                <div class="checkbox-item">
                                     <input class="form-check-input" type="checkbox" id="cvc">
                                     <label class="form-check-label ms-2" for="cvc">CVC</label>
                                 </div>
@@ -286,7 +278,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                                                            <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>Aislamiento</label>
@@ -295,8 +287,8 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group mb-3">
-                                <label>Régimen</label>
-                                <input type="text" class="form-control" id="regimen">
+                                <label>DU</label>
+                                <select class="form-select" id="du"></select>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -314,16 +306,28 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-9">
+                        <div class="col-12">
                             <div class="form-group mb-3">
-                                <label>SA</label>
-                                <select class="form-select" id="sa"></select>
+                                <label>BH</label>
+                                <select class="form-select" id="bh"></select>
                             </div>
                         </div>
+                    </div>
+
+                                        <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>RASS</label>
                                 <select class="form-select" id="rass"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label>SA</label>
+                                <select class="form-select" id="sa"></select>
                             </div>
                         </div>
                     </div>

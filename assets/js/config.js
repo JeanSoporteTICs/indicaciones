@@ -119,6 +119,70 @@ window.SelectConfig = {
             "selected": false
         }
     ],
+    "du": [
+        {
+            "value": "",
+            "label": "Seleccione DU",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "ninguno",
+            "label": "ninguno",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 1 hr",
+            "label": "cada 1 hr",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 4h",
+            "label": "cada 4h",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 6 hr",
+            "label": "cada 6 hr",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 12 hr",
+            "label": "cada 12 hr",
+            "disabled": false,
+            "selected": false
+        }
+    ],
+    "bh": [
+        {
+            "value": "",
+            "label": "Seleccione BH",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "cada 4hr",
+            "label": "cada 4hr",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 6hr",
+            "label": "cada 6hr",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "cada 12 hr",
+            "label": "cada 12 hr",
+            "disabled": false,
+            "selected": false
+        }
+    ],
     "vm": [
         {
             "value": "",

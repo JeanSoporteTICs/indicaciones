@@ -234,8 +234,8 @@ $ws->setCellValue('C15', 'SNG: ' . $marca($data['sng'] ?? null));
 $ws->setCellValue('D15', 'SF: '  . $marca($data['sf']  ?? null));
 
 // DU, BH, CVC
-fillByMarker($ws, '{{DU}}',  $marca($data['du']  ?? null));
-fillByMarker($ws, '{{BH}}',  $marca($data['bh']  ?? null));
+fillByMarker($ws, '{{DU}}', $data['du'] ?? '');
+fillByMarker($ws, '{{BH}}', $data['bh'] ?? '');
 fillByMarker($ws, '{{CVC}}', $marca($data['cvc'] ?? null));
 
 // AISLAMIENTO, REGIMEN, VMI, SA, ESC, RASS, BIS, TOF
