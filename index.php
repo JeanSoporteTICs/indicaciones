@@ -313,8 +313,7 @@
                             </div>
                         </div>
                     </div>
-
-                                        <div class="row">
+                    <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>RASS</label>
@@ -322,9 +321,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-md-12">
                             <div class="form-group mb-3">
                                 <label>SA</label>
                                 <select class="form-select" id="sa"></select>
