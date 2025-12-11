@@ -139,22 +139,49 @@ function getRecetaSlots(Worksheet $ws, int $startRow = 1, int $endRow = 200, int
 function getMedicationSlots(Worksheet $ws, int $startRow = 28, int $endRow = 102): array {
     $slots = [];
     for ($row = $startRow; $row <= $endRow; $row++) {
-        $fiVal   = $ws->getCell("A{$row}")->getValue();
-        $medVal  = $ws->getCell("B{$row}")->getValue();
-        $volVal  = $ws->getCell("A".($row+1))->getValue();
-        $dosVal  = $ws->getCell("B".($row+1))->getValue();
+        $fiRaw  = $ws->getCell("A{$row}")->getValue();
+        $medRaw = $ws->getCell("B{$row}")->getValue();
+        $fiVal  = is_string($fiRaw)  ? strtoupper(trim($fiRaw))  : $fiRaw;
+        $medVal = is_string($medRaw) ? strtoupper(trim($medRaw)) : $medRaw;
 
-        if ($fiVal === '{{FI}}' && $medVal === '{{MEDICAMENTO}}'
-            && $volVal === '{{VOLUMEN}}' && $dosVal === '{{DOSIS}}') {
+        if ($fiVal === '{{FI}}' && $medVal === '{{MEDICAMENTO}}') {
+            $fiCoord  = "A{$row}";
+            $medCoord = "B{$row}";
+            $volCoord = null;
+            $dosisCoord = null;
+            $intervalCoord = null;
+            $viaCoord = null;
 
-            $slots[] = [
-                'fi'    => "A{$row}",
-                'med'   => "B{$row}",
-                'vol'   => "A".($row+1),
-                'dosis' => "B".($row+1),
-            ];
+            // Buscar marcadores en la fila actual y la siguiente (columnas A-J)
+            foreach ([$row, $row+1] as $scanRow) {
+                if ($scanRow > $endRow) continue;
+                for ($col = 1; $col <= 10; $col++) {
+                    $coord = Coordinate::stringFromColumnIndex($col) . $scanRow;
+                    $value = $ws->getCell($coord)->getValue();
+                    $valueNorm = is_string($value) ? strtoupper(trim($value)) : $value;
+                    if ($valueNorm === '{{VOLUMEN}}') {
+                        $volCoord = $coord;
+                    } elseif ($valueNorm === '{{DOSIS}}') {
+                        $dosisCoord = $coord;
+                    } elseif ($valueNorm === '{{INTERVALO}}') {
+                        $intervalCoord = $coord;
+                    } elseif ($valueNorm === '{{VIA}}') {
+                        $viaCoord = $coord;
+                    }
+                }
+            }
 
-            $row++; // saltar la fila siguiente ya procesada
+            if ($volCoord || $dosisCoord || $intervalCoord || $viaCoord) {
+                $slots[] = [
+                    'fi'        => $fiCoord,
+                    'med'       => $medCoord,
+                    'vol'       => $volCoord,
+                    'dosis'     => $dosisCoord,
+                    'intervalo' => $intervalCoord,
+                    'via'       => $viaCoord
+                ];
+                $row++; // saltar la fila siguiente ya procesada
+            }
         }
     }
     return $slots;
@@ -236,6 +263,7 @@ $ws->setCellValue('D15', 'SF: '  . $marca($data['sf']  ?? null));
 // DU, BH, CVC
 fillByMarker($ws, '{{DU}}', $data['du'] ?? '');
 fillByMarker($ws, '{{BH}}', $data['bh'] ?? '');
+fillByMarker($ws, '{{FLEBOS}}', $data['flebos'] ?? '');
 fillByMarker($ws, '{{CVC}}', $marca($data['cvc'] ?? null));
 
 // AISLAMIENTO, REGIMEN, VMI, SA, ESC, RASS, BIS, TOF
@@ -249,8 +277,8 @@ fillByMarker($ws, '{{VM}}',         $data['vm']          ?? ($data['VM'] ?? ''))
 fillByMarker($ws, '{{SA}}',   $data['sa']   ?? '');
 fillByMarker($ws, '{{ESC}}',  $data['esc']  ?? '');
 fillByMarker($ws, '{{RASS}}', $data['rass'] ?? '');
-fillByMarker($ws, '{{BIS}}',  $marca($data['bis'] ?? null));
-fillByMarker($ws, '{{TOF}}',  $marca($data['tof'] ?? null));
+fillByMarker($ws, '{{BIS}}',  $data['bis']  ?? '');
+fillByMarker($ws, '{{TOF}}',  $data['tof']  ?? '');
 
 // SVC: si no tienes campo en el formulario, se queda vac­o (o usa cvc si quieres)
 fillByMarker($ws, '{{SVC}}', $data['svc'] ?? '');
@@ -277,6 +305,8 @@ if (!empty($data['medicamentos']) && is_array($data['medicamentos'])) {
                     'medicamento'=> $m['medicamento'] ?? '',
                     'volumen'    => $m['volumen']    ?? '',
                     'dosis'      => $m['dosis']      ?? '',
+                    'intervalo'  => $m['intervalo']  ?? '',
+                    'via'        => $m['via']        ?? ''
                 ];
             }
         }
@@ -294,63 +324,28 @@ for ($i = 0; $i < $max; $i++) {
 
     $ws->setCellValue($slot['fi'],    formatFiLabel($m['fi'] ?? ''));
     $ws->setCellValue($slot['med'],   $m['medicamento'] ?? '');
-    $ws->setCellValue($slot['vol'],   $m['volumen']    ?? '');
-    $ws->setCellValue($slot['dosis'], $m['dosis']      ?? '');
+    if (!empty($slot['vol']))   $ws->setCellValue($slot['vol'],   $m['volumen']    ?? '');
+    if (!empty($slot['dosis'])) $ws->setCellValue($slot['dosis'], $m['dosis']      ?? '');
+    if (!empty($slot['intervalo'])) {
+        $ws->setCellValue($slot['intervalo'], $m['intervalo'] ?? '');
+    }
+    if (!empty($slot['via'])) {
+        $ws->setCellValue($slot['via'], $m['via'] ?? '');
+    }
 }
 
 // Si sobran slots no usados, los dejamos con los {{...}} para que no se vea feo:
 for ($i = $max; $i < count($slots); $i++) {
     $slot = $slots[$i];
-    $ws->setCellValue($slot['fi'],    '');
-    $ws->setCellValue($slot['med'],   '');
-    $ws->setCellValue($slot['vol'],   '');
-    $ws->setCellValue($slot['dosis'], '');
-}
-
-/* ===========================================================
-   HOJA: RECETA MÉDICA
-   =========================================================== */
-
-$recetaSheets = [
-    'Receta Médica',
-    'Receta Medica',
-    'Receta Médica'
-];
-$wsReceta = null;
-foreach ($recetaSheets as $sheetName) {
-    $wsReceta = $spreadsheet->getSheetByName($sheetName);
-    if ($wsReceta) break;
-}
-if ($wsReceta) {
-    fillByMarker($wsReceta, '{{fecha}}',           $fechaFormat);
-    fillByMarker($wsReceta, '{{nombrePaciente}}',  $data['nombrePaciente'] ?? '');
-    fillByMarker($wsReceta, '{{ficha}}',           $data['ficha'] ?? '');
-    fillByMarker($wsReceta, '{{cama}}',            $data['cama'] ?? '');
-    fillByMarker($wsReceta, '{{peso}}',            $data['peso'] ?? '');
-    fillByMarker($wsReceta, '{{edad}}',            $data['edad'] ?? '');
-    fillByMarker($wsReceta, '{{diagnostico}}',     $data['diagnostico'] ?? '');
-    fillByMarker($wsReceta, '{{medicoResponsable}}', $data['medicoResponsable'] ?? '');
-
-    $slotsReceta = getRecetaSlots($wsReceta, 1, 200, 20);
-    $maxReceta = min(count($slotsReceta), count($meds));
-    for ($i = 0; $i < $maxReceta; $i++) {
-        $slot = $slotsReceta[$i];
-        $m    = $meds[$i];
-        if (!empty($slot['med'])) {
-            $wsReceta->setCellValue($slot['med'], $m['medicamento'] ?? '');
-        }
-        if (!empty($slot['dosis'])) {
-            $wsReceta->setCellValue($slot['dosis'], $m['dosis'] ?? '');
-        }
+    if (!empty($slot['fi']))    $ws->setCellValue($slot['fi'],    '');
+    if (!empty($slot['med']))   $ws->setCellValue($slot['med'],   '');
+    if (!empty($slot['vol']))   $ws->setCellValue($slot['vol'],   '');
+    if (!empty($slot['dosis'])) $ws->setCellValue($slot['dosis'], '');
+    if (!empty($slot['intervalo'])) {
+        $ws->setCellValue($slot['intervalo'], '');
     }
-    for ($i = $maxReceta; $i < count($slotsReceta); $i++) {
-        $slot = $slotsReceta[$i];
-        if (!empty($slot['med'])) {
-            $wsReceta->setCellValue($slot['med'], '');
-        }
-        if (!empty($slot['dosis'])) {
-            $wsReceta->setCellValue($slot['dosis'], '');
-        }
+    if (!empty($slot['via'])) {
+        $ws->setCellValue($slot['via'], '');
     }
 }
 

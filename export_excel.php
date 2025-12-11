@@ -43,14 +43,15 @@ $datos = [
   ['SF',!empty($data['sf'])?'SI':'NO'],
   ['DU',$data['du']??''],
   ['BH',$data['bh']??''],
+  ['Flebos',$data['flebos']??''],
   ['CVC',!empty($data['cvc'])?'SI':'NO'],
   ['Aislamiento',$data['aislamiento']??''],
   ['Regimen',$data['regimen']??''],
   ['VM',$data['vm']??''],
-  ['SA',$data['sa']??''],
+  ['AS',$data['sa']??''],
   ['ESC',$data['esc']??''],
-  ['BIS',!empty($data['bis'])?'SI':'NO'],
-  ['TOF',!empty($data['tof'])?'SI':'NO'],
+  ['BIS',$data['bis']??''],
+  ['TOF',$data['tof']??''],
   ['RASS',$data['rass']??''],
   ['FechaReceta',$data['fechaReceta']??'']
 ];

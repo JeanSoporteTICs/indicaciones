@@ -79,27 +79,27 @@
                                 <input type="date" class="form-control" id="fechaNacimiento" required>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>Hora</label>
                                 <input type="time" class="form-control" id="hora">
                             </div>
                         </div>
-                        <div class="col-md-2">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>Edad</label>
                                 <input type="text" class="form-control calculated-field" id="edad" readonly>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>Días Hosp.</label>
                                 <input type="text" class="form-control calculated-field" id="diasHospitalizacion" readonly>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label class="required-field">Cama</label>
@@ -112,7 +112,10 @@
                                 <select class="form-select" id="sexo" required></select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
                             <div class="form-group mb-3">
                                 <label class="required-field">Nombre del Paciente</label>
                                 <input type="text" class="form-control" id="nombrePaciente" required>
@@ -266,19 +269,11 @@
                                     <input class="form-check-input" type="checkbox" id="cvc">
                                     <label class="form-check-label ms-2" for="cvc">CVC</label>
                                 </div>
-                                <div class="checkbox-item">
-                                    <input class="form-check-input" type="checkbox" id="bis">
-                                    <label class="form-check-label ms-2" for="bis">BIS 40-60</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input class="form-check-input" type="checkbox" id="tof">
-                                    <label class="form-check-label ms-2" for="tof">TOF 1-2 de 4</label>
-                                </div>
                             </div>
                         </div>
                     </div>
 
-                                                            <div class="row">
+                    <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>Aislamiento</label>
@@ -304,9 +299,23 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label>Regimen</label>
+                                <input type="text" class="form-control" id="regimen" placeholder="Ingresar regimen">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group mb-3">
+                                <label>Flebos</label>
+                                <select class="form-select" id="flebos"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-group mb-3">
                                 <label>BH</label>
                                 <select class="form-select" id="bh"></select>
@@ -320,11 +329,23 @@
                                 <select class="form-select" id="rass"></select>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>BIS</label>
+                                <select class="form-select" id="bis"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>TOF</label>
+                                <select class="form-select" id="tof"></select>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group mb-3">
-                                <label>SA</label>
+                                <label>AS</label>
                                 <select class="form-select" id="sa"></select>
                             </div>
                         </div>
@@ -342,10 +363,12 @@
                         <thead>
                             <tr>
                                 <th width="40%">Medicamento</th>
-                                <th width="20%">Dosis</th>
-                                <th width="15%">Volumen</th>
-                                <th width="15%">Fecha Indicación</th>
-                                <th width="10%">Acción</th>
+                                <th width="15%">Dosis</th>
+                                <th width="15%">Intervalo</th>
+                                <th width="15%">Vía</th>
+                                <th width="10%">Volumen</th>
+                                <th width="10%">Fecha Indicación</th>
+                                <th width="5%">Acción</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -356,81 +379,6 @@
                 </div>
             </div>
 
-            <!-- Recetas (solo visual, no se usa directo para la plantilla nueva) -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header">
-                    <i class="fas fa-file-prescription me-2"></i>Recetas</div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Fecha Receta</label>
-                                <input type="date" class="form-control" id="fechaReceta">
-                            </div>
-                        </div>
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label>Nombre Paciente Receta</label>
-                                <input type="text" class="form-control" id="nombrePacienteReceta" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>N° Ficha Clínica Receta</label>
-                                <input type="text" class="form-control" id="fichaReceta" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Servicio / Cama Receta</label>
-                                <input type="text" class="form-control" id="camaReceta" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Peso (kg) Receta</label>
-                                <input type="text" class="form-control" id="pesoReceta" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Edad Receta</label>
-                                <input type="text" class="form-control" id="edadReceta" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label>Diagnósticos Receta</label>
-                                <textarea class="form-control" id="diagnosticoReceta" rows="2" readonly></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <h5>Medicamentos Recetados</h5>
-                    <table class="table table-bordered" id="tablaRecetas">
-                        <thead>
-                            <tr>
-                                <th width="50%">Medicamento</th>
-                                <th width="25%">Dosis</th>
-                                <th width="25%">Volumen</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="card border-0 shadow-sm action-buttons no-print mb-4">
-                <div class="card-body d-flex flex-column flex-sm-row gap-2 justify-content-end">
-                    <button type="reset" class="btn btn-outline-secondary flex-fill flex-sm-none px-4">Limpiar</button>
-                    <button type="button" class="btn btn-primary flex-fill flex-sm-none px-4" id="calculateBtn">
-                        <i class="fas fa-calculator me-1"></i> Calcular
-                    </button>
-                </div>
-            </div>
         </form>
     </div>
 

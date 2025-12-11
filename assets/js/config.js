@@ -212,7 +212,7 @@ window.SelectConfig = {
     "sa": [
         {
             "value": "",
-            "label": "Seleccione SA",
+            "label": "Seleccione AS",
             "disabled": true,
             "selected": true
         },
@@ -381,6 +381,46 @@ window.SelectConfig = {
             "selected": false
         }
     ],
+    "bis": [
+        {
+            "value": "",
+            "label": "Seleccione BIS",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "40-60",
+            "label": "40-60",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "60-80",
+            "label": "60-80",
+            "disabled": false,
+            "selected": false
+        }
+    ],
+    "tof": [
+        {
+            "value": "",
+            "label": "Seleccione TOF",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "1-2 de 4",
+            "label": "1-2 de 4",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "2-3 de 4",
+            "label": "2-3 de 4",
+            "disabled": false,
+            "selected": false
+        }
+    ],
     "rass": [
         {
             "value": "",
@@ -403,6 +443,160 @@ window.SelectConfig = {
         {
             "value": "-4 a -5 sedación profunda",
             "label": "-4 a -5 sedación profunda",
+            "disabled": false,
+            "selected": false
+        }
+    ],
+    "intervalo": [
+        {
+            "value": "",
+            "label": "Seleccione intervalo",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "CADA 4 HORAS",
+            "label": "4 h",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "CADA 6 HORAS",
+            "label": "6 h",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "CADA 8 HORAS",
+            "label": "8 h",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "CADA 12 HORAS",
+            "label": "12 h",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "1 VEZ AL DIA",
+            "label": "1 VEZ AL DIA",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "SEGÚN ESQUEMA",
+            "label": "SEGÚN ESQUEMA",
+            "disabled": false,
+            "selected": false
+        }
+    ],
+    "via": [
+        {
+            "value": "",
+            "label": "Seleccione vía",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "Oral",
+            "label": "Oral",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Intramuscular",
+            "label": "Intramuscular",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Endovenosa",
+            "label": "Endovenosa",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Subcutánea",
+            "label": "Subcutánea",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Inhalatoria",
+            "label": "Inhalatoria",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Transdérmica",
+            "label": "Transdérmica",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Espinal",
+            "label": "Espinal",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Peridural",
+            "label": "Peridural",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Intratecal",
+            "label": "Intratecal",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Nasal",
+            "label": "Nasal",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Oftálmica",
+            "label": "Oftálmica",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Ótica",
+            "label": "Ótica",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Tópica",
+            "label": "Tópica",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Rectal",
+            "label": "Rectal",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Vaginal",
+            "label": "Vaginal",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Plexo Nervioso",
+            "label": "Plexo Nervioso",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "Peribulbar",
+            "label": "Peribulbar",
             "disabled": false,
             "selected": false
         }

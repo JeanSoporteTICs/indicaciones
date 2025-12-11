@@ -34,14 +34,15 @@ class Paciente {
       sf: false,
       du: "",
       bh: "",
+      flebos: "",
       cvc: false,
       aislamiento: '',
       regimen: '',
       vm: '',
       sa: '',
       esc: '',
-      bis: false,
-      tof: false,
+      bis: '',
+      tof: '',
       rass: '',
       fechaReceta: '',
       medicamentos: []      // â† solo una vez
@@ -80,14 +81,15 @@ class Paciente {
       sf:       chk('sf'),
       du:       val("du"),
       bh:       val("bh"),
+      flebos:   val("flebos"),
       cvc:      chk('cvc'),
       aislamiento: val('aislamiento'),
       regimen:     val('regimen'),
       vm:         val('vm'),
       sa:         val('sa'),
       esc:        val('esc'),
-      bis:        chk('bis'),
-      tof:        chk('tof'),
+      bis:        val('bis'),
+      tof:        val('tof'),
       rass:       val('rass'),
       fechaReceta: val('fechaReceta')
     });
@@ -105,6 +107,8 @@ class Paciente {
           codigo:      codigo,
           medicamento: nombre || '',
           dosis:       get('m_dosis'),
+          intervalo:   get('m_intervalo'),
+          via:         get('m_via'),
           volumen:     get('m_volumen'),
           fi:          get('m_fi')
         });
@@ -158,6 +162,7 @@ class Paciente {
     setChk('sf',this._data.sf);
     set("du",this._data.du);
     set("bh",this._data.bh);
+    set("flebos",this._data.flebos);
     setChk('cvc',this._data.cvc);
 
     set('aislamiento',this._data.aislamiento);
@@ -166,49 +171,30 @@ class Paciente {
     set('sa',this._data.sa);
     set('esc',this._data.esc);
 
-    setChk('bis',this._data.bis);
-    setChk('tof',this._data.tof);
+    set('bis',this._data.bis);
+    set('tof',this._data.tof);
     set('rass',this._data.rass);
     set('fechaReceta',this._data.fechaReceta);
-
-    // Datos de receta derivados
-    set('nombrePacienteReceta',this._data.nombrePaciente);
-    set('fichaReceta',this._data.ficha);
-    set('camaReceta',this._data.cama);
-    set('pesoReceta',this._data.peso);
-    set('edadReceta',this._data.edad);
-    set('diagnosticoReceta',this._data.diagnostico);
-
-    // Tabla de recetas: usar SOLO this._data.medicamentos (ya no duplicar)
-    const tbodyRecetas = document.querySelector('#tablaRecetas tbody');
-    if (tbodyRecetas){
-      tbodyRecetas.innerHTML = '';
-      (this._data.medicamentos || []).forEach(m => {
-        const row = tbodyRecetas.insertRow();
-        row.innerHTML = `
-          <td>${m.medicamento || ''}</td>
-          <td>${m.dosis || ''}</td>
-          <td>${m.volumen || ''}</td>
-        `;
-      });
-    }
 
     // Opcional: tambiÃ©n podrÃ­as repoblar la tabla #medicamentos desde _data.medicamentos
     const tbodyMeds = document.querySelector('#medicamentos tbody');
     if (tbodyMeds){
       tbodyMeds.innerHTML = '';
-      if ((this._data.medicamentos || []).length){
-        this._data.medicamentos.forEach(m => {
-          const tr = document.createElement('tr');
+        if ((this._data.medicamentos || []).length){
+          this._data.medicamentos.forEach(m => {
+            const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="medicamento-cell"></td>
             <td><input type="text" class="form-control" name="m_dosis" value="${m.dosis || ''}"></td>
-            <td><input type="text" class="form-control" name="m_volumen" value="${m.volumen || ''}"></td>
+            <td><select class="form-select" name="m_intervalo"></select></td>
+            <td><select class="form-select" name="m_via"></select></td>
+            <td><input type="text" class="form-control form-control-sm" name="m_volumen" value="${m.volumen || ''}"></td>
             <td><input type="date" class="form-control" name="m_fi" value="${m.fi || ''}"></td>
             <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
           `;
           tbodyMeds.appendChild(tr);
           ensureMedicamentoInput(tr, m.codigo || '', m.medicamento || '');
+          safePopulateMedicSelects(tr, m);
         });
       } else {
         // si no hay meds guardados, dejar una fila vacÃ­a
@@ -273,9 +259,14 @@ class Paciente {
   calcularPesoIdeal(){
     const {sexo,talla} = this._data;
     if (!sexo || !talla) return 0;
-    if (sexo === 'M') this._data.pesoIdeal = 50 + 0.91*(talla-152.4);
-    else if (sexo === 'F') this._data.pesoIdeal = 45.5 + 0.91*(talla-152.4);
-    else this._data.pesoIdeal = 0;
+    const sx = (sexo || '').toString().trim().toLowerCase();
+    if (sx === 'm' || sx === 'masculino') {
+      this._data.pesoIdeal = 50 + 0.91*(talla-152.4);
+    } else if (sx === 'f' || sx === 'femenino') {
+      this._data.pesoIdeal = 45.5 + 0.91*(talla-152.4);
+    } else {
+      this._data.pesoIdeal = 0;
+    }
     return this._data.pesoIdeal;
   }
 
@@ -306,13 +297,10 @@ class Paciente {
   }
 
   calcularVFG(){
-    const {talla,crea,edad,sexo} = this._data;
-    if (!talla || !crea || crea===0) return 0;
-    let k = 0.55;
-    if (edad<1) k=0.45;
-    else if (sexo==='M' && edad>12) k=0.7;
-    else if (sexo==='F' && edad>12) k=0.55;
-    this._data.vfg = (k*talla)/crea;
+    const {talla,crea} = this._data;
+    if (!talla || !crea || crea === 0) return 0;
+    // Fórmula solicitada: (TALLA * 0.413) / CREA
+    this._data.vfg = (talla * 0.413) / crea;
     return this._data.vfg;
   }
 
@@ -407,6 +395,60 @@ function populateSelectsFromConfig(){
   });
 }
 
+function populateFlebosFromArsenal(){
+  const select = document.getElementById('flebos');
+  if (!select) return;
+  const previous = select.value;
+  const options = [{
+    value: '',
+    label: 'Seleccione Flebos',
+    disabled: true,
+    selected: true
+  }];
+  const catalog = getMedicamentoCatalog();
+  catalog.forEach(item=>{
+    const nombre = (item.nombre || '').trim();
+    const codigo = (item.codigo || '').trim();
+    const value = nombre || codigo;
+    if (!value) return;
+    const label = codigo ? `${nombre} (${codigo})` : nombre;
+    options.push({ value, label });
+  });
+  select.innerHTML = '';
+  options.forEach(opt=>{
+    const option = document.createElement('option');
+    option.value = opt.value ?? '';
+    option.textContent = opt.label ?? opt.value ?? '';
+    if (opt.disabled) option.disabled = true;
+    if (opt.selected) option.selected = true;
+    select.appendChild(option);
+  });
+  if (previous && Array.from(select.options).some(opt=>opt.value === previous)){
+    select.value = previous;
+  }
+  select.dataset.placeholder = 'Buscar Flebos';
+  ensureSearchableSelect(select, options);
+}
+
+const DEFAULT_INTERVALO_OPTIONS = [
+  { value: '4 h',  label: '4 h' },
+  { value: '6 h',  label: '6 h' },
+  { value: '8 h',  label: '8 h' },
+  { value: '12 h', label: '12 h' },
+  { value: '24 h', label: '24 h' },
+  { value: '36 h', label: '36 h' }
+];
+
+const DEFAULT_VIA_OPTIONS = [
+  { value: 'EV',  label: 'EV' },
+  { value: 'VO',  label: 'VO' },
+  { value: 'IM',  label: 'IM' },
+  { value: 'SC',  label: 'SC' },
+  { value: 'SL',  label: 'SL' },
+  { value: 'INH', label: 'INH' },
+  { value: 'OTRA', label: 'OTRA' }
+];
+
 function getMedicamentoCatalog(){
   return Array.isArray(window.ArsenalCatalog?.medicamentos) ? window.ArsenalCatalog.medicamentos : [];
 }
@@ -426,6 +468,81 @@ function getMedicamentoMatches(term = ''){
   return catalog
     .filter(item => item.nombre.toLowerCase().includes(normalized))
     .slice(0, MEDICAMENTO_SUGGESTION_LIMIT);
+}
+
+function buildOptionsFromConfig(key, placeholder, fallback){
+  const cfg = Array.isArray(window.SelectConfig?.[key]) ? window.SelectConfig[key] : null;
+  if (cfg){
+    return cfg.map(opt=>({
+      value: opt.value ?? '',
+      label: opt.label ?? opt.value ?? '',
+      disabled: !!opt.disabled,
+      selected: !!opt.selected
+    }));
+  }
+  const opts = [];
+  opts.push({
+    value: '',
+    label: placeholder,
+    disabled: true,
+    selected: true
+  });
+  (fallback || []).forEach(opt=>{
+    opts.push({
+      value: opt.value ?? '',
+      label: opt.label ?? opt.value ?? '',
+      disabled: !!opt.disabled,
+      selected: !!opt.selected
+    });
+  });
+  return opts;
+}
+
+function setSelectOptions(select, options, selectedValue=''){
+  if (!select || !Array.isArray(options)) return;
+  select.innerHTML = '';
+  options.forEach(opt=>{
+    const option = document.createElement('option');
+    option.value = opt.value ?? '';
+    option.textContent = opt.label ?? opt.value ?? '';
+    if (opt.disabled) option.disabled = true;
+    if (opt.selected) option.selected = true;
+    select.appendChild(option);
+  });
+  if (selectedValue){
+    const match = Array.from(select.options).find(o=>o.value===selectedValue);
+    if (match) select.value = selectedValue;
+  }
+}
+
+function populateMedicSelects(row, data = {}){
+  if (!row) return;
+  const intervaloSel = row.querySelector('select[name="m_intervalo"]');
+  const viaSel = row.querySelector('select[name="m_via"]');
+  const intervaloOpts = buildOptionsFromConfig('intervalo', 'Intervalo', DEFAULT_INTERVALO_OPTIONS);
+  const viaOpts = buildOptionsFromConfig('via', 'Vía', DEFAULT_VIA_OPTIONS);
+  if (intervaloSel){
+    setSelectOptions(intervaloSel, intervaloOpts, data.intervalo || '');
+  }
+  if (viaSel){
+    setSelectOptions(viaSel, viaOpts, data.via || '');
+  }
+}
+
+function safePopulateMedicSelects(row, data = {}){
+  if (typeof populateMedicSelects === 'function'){
+    populateMedicSelects(row, data);
+    return;
+  }
+  // Fallback simple por si no está definido (no debería suceder)
+  const intervaloSel = row?.querySelector('select[name="m_intervalo"]');
+  const viaSel = row?.querySelector('select[name="m_via"]');
+  if (intervaloSel){
+    setSelectOptions(intervaloSel, DEFAULT_INTERVALO_OPTIONS, data.intervalo || '');
+  }
+  if (viaSel){
+    setSelectOptions(viaSel, DEFAULT_VIA_OPTIONS, data.via || '');
+  }
 }
 
 function renderMedicamentoSuggestions(wrapper, term = ''){
@@ -864,7 +981,9 @@ function addRowMedic() {
     tr.innerHTML = `
         <td class="medicamento-cell"></td>
         <td><input type="text" class="form-control" name="m_dosis"></td>
-        <td><input type="text" class="form-control" name="m_volumen"></td>
+        <td><select class="form-select" name="m_intervalo"></select></td>
+        <td><select class="form-select" name="m_via"></select></td>
+        <td><input type="text" class="form-control form-control-sm" name="m_volumen"></td>
         <td><input type="date" class="form-control" name="m_fi"></td>
         <td>
             <button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">
@@ -874,6 +993,7 @@ function addRowMedic() {
     `;
     tbody.appendChild(tr);
     ensureMedicamentoInput(tr);
+    safePopulateMedicSelects(tr);
     toggleAddMedicButton();
 }
 
@@ -938,6 +1058,8 @@ function readMedicamentosTo(p) {
     const fi      = get('m_fi');
     const volumen = get('m_volumen');
     const dosis   = get('m_dosis');
+    const intervalo = get('m_intervalo');
+    const via      = get('m_via');
 
     if (!codigo && !nombre) return;
     const nombreMedicamento = nombre || codigo;
@@ -948,11 +1070,14 @@ function readMedicamentosTo(p) {
       dosis:       dosis,
       volumen:     volumen,
       fi:          fi,
+      intervalo:   intervalo,
+      via:         via,
       MEDICAMENTO: nombreMedicamento,
       DOSIS:       dosis,
       VOLUMEN:     volumen,
       FI:          fi,
-      CODIGO:      codigo
+      CODIGO:      codigo,
+      INTERVALO:   intervalo
     });
   });
 }
@@ -1011,7 +1136,6 @@ function exportTpl(){
   if(el) el.addEventListener('change', calcularYActualizar);
 });
 
-document.getElementById('calculateBtn')?.addEventListener('click', calcularYActualizar);
 document.getElementById('saveBtn')?.addEventListener('click', guardarDatos);
 document.getElementById('newBtn')?.addEventListener('click', nuevoFormulario);
 document.getElementById('exportBtn')?.addEventListener('click', exportAll);
@@ -1068,6 +1192,7 @@ function renderConfigSelector(){
   const select = document.getElementById('configListSelector');
   if (!select) return;
   const keys = Object.keys(configState.data);
+  const keyLabels = { sa: 'AS' };
   select.innerHTML = '';
   if (!keys.length){
     const opt = document.createElement('option');
@@ -1081,7 +1206,7 @@ function renderConfigSelector(){
   keys.forEach(key=>{
     const opt = document.createElement('option');
     opt.value = key;
-    opt.textContent = key;
+    opt.textContent = keyLabels[key] || key;
     if (key === configState.currentKey) opt.selected = true;
     select.appendChild(opt);
   });
@@ -1345,6 +1470,7 @@ function updateMedicamentoCache(){
   applyArsenalSortOrder();
   window.ArsenalCatalog.medicamentos = [...arsenalState.lista];
   refreshMedicamentoInputs();
+  populateFlebosFromArsenal();
 }
 
 function refreshMedicamentoInputs(){
@@ -1607,6 +1733,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   populateSelectsFromConfig();
+  populateFlebosFromArsenal();
   const hoy = new Date();
   document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
   document.getElementById('fechaIngreso').value = '';
