@@ -28,3 +28,48 @@ body { background-color:#f5f7f9; color:#333; font-family:'Segoe UI', Tahoma, Gen
 .config-toolbar .form-select{min-width:220px}
 #configOptionsTable td{vertical-align:middle}
 #configOptionsTable .badge{font-size:.75rem}
+
+/* Fondo animado pediátrico */
+.peds-bg{
+  position: relative;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(129,199,245,0.6) 0, rgba(129,199,245,0) 32%),
+    radial-gradient(circle at 85% 15%, rgba(255,224,130,0.55) 0, rgba(255,224,130,0) 30%),
+    radial-gradient(circle at 20% 80%, rgba(206,147,216,0.35) 0, rgba(206,147,216,0) 28%),
+    linear-gradient(135deg, #f0f7ff 0%, #fdf4ff 40%, #f0f7ff 100%) !important;
+  overflow-x: hidden;
+}
+.peds-bg::before,
+.peds-bg::after{
+  content:"";
+  position:absolute;
+  inset:-15% -5% auto auto;
+  width:320px;
+  height:320px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,193,7,.25), rgba(255,193,7,0));
+  filter: blur(14px);
+  opacity:.75;
+  animation: float-soft 18s ease-in-out infinite alternate;
+  pointer-events:none;
+  z-index:0;
+}
+.peds-bg::after{
+  inset:auto auto -10% -5%;
+  width:360px;
+  height:360px;
+  background: radial-gradient(circle at 70% 70%, rgba(100,181,246,.25), rgba(100,181,246,0));
+  animation-duration: 20s;
+}
+@keyframes float-soft{
+  from{ transform: translateY(0) translateX(0) scale(1); }
+  to{   transform: translateY(-16px) translateX(8px) scale(1.04); }
+}
+
+footer{
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(0,0,0,0.05);
+}

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
-<body class="bg-light">
+<body class="peds-bg">
     <header class="bg-primary text-white py-4 shadow-sm mb-4">
         <div class="container text-center">
             <h1 class="h3 mb-1"><i class="fas fa-hospital me-2"></i>Indicaciones Médicas Pediátrica</h1>
