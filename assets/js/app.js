@@ -809,7 +809,12 @@ function ensureMedicamentoInput(row, selectedCode = '', fallbackName = ''){
       renderMedicamentoSuggestions(wrapper, input.value);
     });
     input.addEventListener('blur', ()=>{
-      setTimeout(()=>hideMedicamentoSuggestions(wrapper), 120);
+      setTimeout(()=>{
+        const panel = wrapper.querySelector('.medicamento-suggestions');
+        if (!panel?.matches(':hover')){
+          hideMedicamentoSuggestions(wrapper);
+        }
+      }, 120);
     });
   }
 
@@ -960,7 +965,10 @@ function nuevoFormulario(){
   const hoy = new Date();
   document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
   document.getElementById('fechaIngreso').value = '';
-  document.getElementById('fechaReceta').value = hoy.toISOString().split('T')[0];
+  const fechaRecetaEl = document.getElementById('fechaReceta');
+  if (fechaRecetaEl) {
+    fechaRecetaEl.value = hoy.toISOString().split('T')[0];
+  }
   document.getElementById('hora').value = hoy.toTimeString().substring(0,5);
   setImportedState(false);
 }
@@ -1737,7 +1745,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   const hoy = new Date();
   document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
   document.getElementById('fechaIngreso').value = '';
-  document.getElementById('fechaReceta').value = hoy.toISOString().split('T')[0];
+  const fechaRecetaEl = document.getElementById('fechaReceta');
+  if (fechaRecetaEl) {
+    fechaRecetaEl.value = hoy.toISOString().split('T')[0];
+  }
   document.getElementById('hora').value = hoy.toTimeString().substring(0,5);
   setImportedState(false);
   document.getElementById('fecha')?.addEventListener('change', syncFechaReceta);

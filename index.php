@@ -14,20 +14,28 @@
     <link rel="stylesheet" href="assets/css/custom.css">
 </head>
 <body class="peds-bg">
-    <header class="bg-primary text-white py-4 shadow-sm mb-4">
-        <div class="container text-center">
-            <h1 class="h3 mb-1"><i class="fas fa-hospital me-2"></i>Indicaciones Médicas Pediátrica</h1>
-            <p class="lead mb-0">Hospital Base Valdivia</p>
-        </div>
-    </header>
+    <div class="app-shell d-flex flex-column min-vh-100">
+        <main class="flex-fill d-flex flex-column">
+            <header class="site-header text-white shadow-sm mb-4">
+                <div class="header-glow"></div>
+                <div class="container text-center">
+                    <h1 class="h3 mb-1"><i class="fas fa-hospital me-2"></i>Indicaciones Médicas Pediátrica</h1>
+                    <p class="lead mb-1">Hospital Base Valdivia</p>
+                    <p class="site-tagline mb-0">Planifica y exporta indicaciones con claridad y rapidez</p>
+                </div>
+            </header>
 
-    <div class="container pb-5">
-        <div class="card border-0 shadow-sm mb-4">
+            <div class="container-fluid px-3 pb-0 flex-fill">
+                <div class="form-shell mx-auto w-100 layered-panel column-stack">
+                    <div class="floating-pill"></div>
+                    <div class="floating-pill"></div>
+                    <div class="floating-pill"></div>
+                    <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <div class="row g-3 align-items-center">
                     <div class="col-12 col-lg-4">
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary" type="button" id="loadBtn">
+                            <button class="btn btn-primary btn-glow" type="button" id="loadBtn">
                                 <i class="fas fa-file-import me-1"></i> Cargar
                             </button>
                             <button class="btn btn-outline-secondary" type="button" id="newBtn">
@@ -37,7 +45,7 @@
                     </div>
                     <div class="col-12 col-lg-8">
                         <div class="d-flex flex-column flex-md-row gap-2">
-                            <button class="btn btn-warning flex-fill" id="exportBtn">
+                            <button class="btn btn-warning flex-fill btn-glow" id="exportBtn">
                                 <i class="fas fa-file-export me-1"></i> Exportar planilla
                             </button>
                             <button class="btn btn-outline-dark flex-fill" type="button" id="openMaintainerBtn">
@@ -55,7 +63,7 @@
 
         <form id="hospitalizacionForm" class="mb-4">
             <!-- Datos Básicos -->
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-4 medicamentos-card">
                 <div class="card-header">
                     <i class="fas fa-info-circle me-2"></i>Datos Básicos del Paciente
                 </div>
@@ -86,6 +94,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" id="fechaReceta" name="fechaReceta">
 
                     <div class="row">
                         <div class="col-md-3">
@@ -354,7 +363,7 @@
             </div>
 
             <!-- Medicamentos (única) -->
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm mb-4 medicamentos-card">
                 <div class="card-header">
                     <i class="fas fa-pills me-2"></i>Medicamentos
                 </div>
@@ -380,11 +389,12 @@
             </div>
 
         </form>
+            </div>
+            <footer class="text-center py-2">
+                <small class="text-muted">Desarrollado por JCL</small>
+            </footer>
+        </main>
     </div>
-
-    <footer class="text-center py-3">
-        <small class="text-muted">Desarrollado por JCL</small>
-    </footer>
 
 <div class="modal fade" id="arsenalModal" tabindex="-1" aria-labelledby="arsenalModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
