@@ -941,7 +941,7 @@ async function cargarExcelDesdeArchivo(file){
 }
 
 function nuevoFormulario(){
-  if(!confirm('Â¿Crear nuevo formulario?')) return;
+  if(!confirm('¿Crear nuevo formulario?')) return;
   pacienteActual = new Paciente();
   document.getElementById('hospitalizacionForm').reset();
 

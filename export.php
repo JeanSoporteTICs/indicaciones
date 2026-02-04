@@ -51,6 +51,31 @@ try {
     fail('No se pudo abrir la plantilla: ' . $e->getMessage(), 500);
 }
 
+// PHPSpreadsheet no conserva los objetos Table/tabla de la plantilla,
+// así que eliminamos cualquier definedName que haga referencia a ellos antes de guardar.
+$tablesToDrop = [];
+foreach ($spreadsheet->getDefinedNames() as $definedName) {
+    $value = $definedName->getValue();
+    if ($value === '') {
+        continue;
+    }
+    $name = $definedName->getName();
+    if (
+        stripos($value, 'tabla') !== false ||
+        stripos($value, 'table') !== false ||
+        stripos($name, 'arsenal') !== false ||
+        stripos($name, 'tabla') !== false
+    ) {
+        $tablesToDrop[] = $name;
+    }
+}
+foreach ($tablesToDrop as $rangeName) {
+    $spreadsheet->removeNamedRange($rangeName);
+    $spreadsheet->removeDefinedName($rangeName);
+}
+$spreadsheet->removeNamedRange('Arsenal');
+$spreadsheet->removeDefinedName('Arsenal');
+
 /* ===========================================================
    HELPERS PARA MARCADORES Y MEDICAMENTOS
    =========================================================== */

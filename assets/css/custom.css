@@ -12,7 +12,7 @@
 html { scroll-behavior:smooth; height:100%; }
 body { margin:0; min-height:100%; background:linear-gradient(180deg,#eef2ff 0%,#f9f7ff 50%,#fef9f3 100%); color:#1f2633; font-family:'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x:hidden; touch-action:pan-y; }
 
-.site-header { position:relative; overflow:hidden; border-radius:24px; margin:0 0 32px; padding:64px 0; background:linear-gradient(135deg,var(--primary-dark),#253c78); }
+.site-header { position:relative; overflow:hidden; border-radius:0; margin:0 0 32px; padding:64px 0; background:linear-gradient(135deg,var(--primary-dark),#253c78); }
 .site-header::after { content:''; position:absolute; inset:20% auto auto 65%; width:180px; height:180px; background:rgba(255,255,255,.12); filter:blur(20px); border-radius:50%; }
 .site-header::before { content:''; position:absolute; inset:auto -40px 20px auto; width:220px; height:220px; background:rgba(255,255,255,.08); border-radius:55%; }
 .site-header .container { position:relative; z-index:2; }

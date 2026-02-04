@@ -21,7 +21,7 @@
                 <div class="container text-center">
                     <h1 class="h3 mb-1"><i class="fas fa-hospital me-2"></i>Indicaciones Médicas Pediátrica</h1>
                     <p class="lead mb-1">Hospital Base Valdivia</p>
-                    <p class="site-tagline mb-0">Planifica y exporta indicaciones con claridad y rapidez</p>
+                    
                 </div>
             </header>
 
@@ -400,7 +400,7 @@
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="arsenalModalLabel"><i class="fas fa-capsules me-2"></i>Catálogo de Arsenal</h5>
+        <h5 class="modal-title" id="arsenalModalLabel"><i class="fas fa-capsules megit st-2"></i>Catálogo de Arsenal</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
