@@ -217,98 +217,104 @@ window.SelectConfig = {
             "selected": true
         },
         {
-            "value": "ESQUEMA 1  FENTANILO Paj   AMPOLLA  0,5mg\/10ml-MIDAZOLAM PI  AMPOLLA 50mg\/10ml",
-            "label": "ESQUEMA 1  FENTANILO Paj   AMPOLLA  0,5mg\/10ml-MIDAZOLAM PI  AMPOLLA 50mg\/10ml",
+            "value": "ESQUEMA 1: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT FRASCO AMPOLLA 1000mg/50ml",
+            "label": "ESQUEMA 1: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT FRASCO AMPOLLA 1000mg/50ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 2: MORFINA PI AMPOLLA 10mg\/ml - MIDAZOLAM PI AMPOLLA 50 mg\/10ml",
-            "label": "ESQUEMA 2: MORFINA PI AMPOLLA 10mg\/ml - MIDAZOLAM PI AMPOLLA 50 mg\/10ml",
+            "value": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml",
+            "label": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml-MIDAZOLAM PI AMPOLLA 50mg\/10ml",
-            "label": "ESQUEMA 2: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml-MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "value": "ESQUEMA 3a: KETAMINA PI FRASCO AMPOLLA 500MG/10ML + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "label": "ESQUEMA 3a: KETAMINA PI FRASCO AMPOLLA 500MG/10ML + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT AMPOLLA 200mg\/20ml",
-            "label": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "value": "ESQUEMA 3b: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
+            "label": "ESQUEMA 3b: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
-            "label": "ESQUEMA 3: FENTANILO PAJ AMPOLLA 0,5mg\/10ml-PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "value": "ESQUEMA 4a: FENTANILO PAJ AMPOLLA 0,5mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
+            "label": "ESQUEMA 4a: FENTANILO PAJ AMPOLLA 0,5mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT AMPOLLA 200mg\/20ml",
-            "label": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT AMPOLLA 200mg\/20ml",
+            "value": "ESQUEMA 4b: MORFINA PI AMPOLLA 10mg/ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
+            "label": "ESQUEMA 4b: MORFINA PI AMPOLLA 10mg/ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
-            "label": "ESQUEMA 4: KETAMINA PI FRASCO AMPOLLA 500mg\/10ml- PROPOFOL PT FRASCO AMPOLLA 1000mg\/50ml",
+            "value": "ESQUEMA 5: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
+            "label": "ESQUEMA 5: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 5: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOL PT AMPOLLA  200mg\/20ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml",
-            "label": "ESQUEMA 5: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOL PT AMPOLLA  200mg\/20ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml",
+            "value": "ESQUEMA 6: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml + KETAMINA PI FRASCO AMPOLLA 500mg/10ml",
+            "label": "ESQUEMA 6: FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml + KETAMINA PI FRASCO AMPOLLA 500mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 6: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOLPT AMPOLLA  200mg\/20ml-KETAMINA PI FRASCO AMPOLLA 500mg\/10ml",
-            "label": "ESQUEMA 6: FENTANILO PAJ AMPOLLA  0,5mg\/10ml-PROPOFOLPT AMPOLLA  200mg\/20ml-KETAMINA PI FRASCO AMPOLLA 500mg\/10ml",
+            "value": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml",
+            "label": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + FENTANILO PAJ AMPOLLA 0,5mg/10ml + PROPOFOL PT AMPOLLA 200mg/20ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg\/50ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml - FENTANILO PAJ AMPOLLA 0,5mg\/10ML",
-            "label": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg\/50ml -MIDAZOLAM PI AMPOLLA 50mg\/10ml - FENTANILO PAJ AMPOLLA 0,5mg\/10ML",
+            "value": "ESQUEMA 8a: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + MIDAZOLAM PI AMPOLLA 50mg/10ml + FENTANILO PAJ AMPOLLA 0,5mg/10ml",
+            "label": "ESQUEMA 8a: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + MIDAZOLAM PI AMPOLLA 50mg/10ml + FENTANILO PAJ AMPOLLA 0,5mg/10ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml -MIDAZOLAM PI    AMPOLLA 50mg\/10ml - MORFINA PI AMPOLLA 10mg\/ml",
-            "label": "ESQUEMA 7: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml -MIDAZOLAM PI    AMPOLLA 50mg\/10ml - MORFINA PI AMPOLLA 10mg\/ml",
+            "value": "ESQUEMA 8b: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + MIDAZOLAM PI AMPOLLA 50mg/10ml + MORFINA PI AMPOLLA 200mg/20ml",
+            "label": "ESQUEMA 8b: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + MIDAZOLAM PI AMPOLLA 50mg/10ml + MORFINA PI AMPOLLA 200mg/20ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 8: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml- FENTANILO PAJ AMPOLLA 0,5MG\/10ML - PROPOFOL PT  AMPOLLA 200MG\/20ML",
-            "label": "ESQUEMA 8: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml- FENTANILO PAJ AMPOLLA 0,5MG\/10ML - PROPOFOL PT  AMPOLLA 200MG\/20ML",
+            "value": "ESQUEMA 9: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + KETAMINA PI FRASCO AMPOLLA 500MG/10ML - PROPOFOL PT AMPOLLA 200MG/20ML",
+            "label": "ESQUEMA 9: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml + KETAMINA PI FRASCO AMPOLLA 500MG/10ML - PROPOFOL PT AMPOLLA 200MG/20ML",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA 9: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml-KETAMINA PI FRASCO AMPOLLA  500MG\/10ML - PROPOFOL PT AMPOLLA  200MG\/20ML",
-            "label": "ESQUEMA 9: DEXMEDETOMIDINA PI  FRASCO AMPOLLA 200mcg\/50ml-KETAMINA PI FRASCO AMPOLLA  500MG\/10ML - PROPOFOL PT AMPOLLA  200MG\/20ML",
+            "value": "ESQUEMA VNI: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "label": "ESQUEMA VNI: DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA : DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml",
-            "label": "ESQUEMA : DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml",
+            "value": "ESQUEMA A SEPSIS / SS: FENTANILO PAJ 0,5mg/10ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "label": "ESQUEMA A SEPSIS / SS: FENTANILO PAJ 0,5mg/10ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml- PROPOFOL PT  AMPOLLA  200MG\/20ML",
-            "label": "ESQUEMA: DEXMEDETOMIDINA PI FRASCO AMPOLLA  200mcg\/50ml- PROPOFOL PT  AMPOLLA  200MG\/20ML",
+            "value": "ESQUEMA A SEPSIS / SS: MORFINA PI 10mg/ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "label": "ESQUEMA A SEPSIS / SS: MORFINA PI 10mg/ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
             "disabled": false,
             "selected": false
         },
         {
-            "value": "ESQUEMA: DEXMEDETOMIDINA PI  FRASCO AMPOLLA  200mcg\/50ml- FENTANILO PAJ AMPOLLA  0,5MG\/10ML",
-            "label": "ESQUEMA: DEXMEDETOMIDINA PI  FRASCO AMPOLLA  200mcg\/50ml- FENTANILO PAJ AMPOLLA  0,5MG\/10ML",
+            "value": "ESQUEMA B SEPSIS / SS: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "label": "ESQUEMA B SEPSIS / SS: KETAMINA PI FRASCO AMPOLLA 500mg/10ml + DEXMEDETOMIDINA PI FRASCO AMPOLLA 200mcg/50ml",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "ESQUEMA FALLA HEPATICA GRAVE: REMIFENTANILO PI AMPOLLA 0,5mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
+            "label": "ESQUEMA FALLA HEPATICA GRAVE: REMIFENTANILO PI AMPOLLA 0,5mg/10ml + MIDAZOLAM PI AMPOLLA 50mg/10ml",
             "disabled": false,
             "selected": false
         }
