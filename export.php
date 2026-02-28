@@ -277,7 +277,7 @@ $marca = function ($v) {
 };
 
 // REPOSO
-fillByMarker($ws, '{{REPOSO}}', $marca($data['reposo'] ?? null));
+fillByMarker($ws, '{{REPOSO}}', $data['reposo'] ?? '');
 
 // LA / SNG / SF est¡n mezclados con texto "LA: {{LA}}", etc.
 // mejor sobreescribir toda la celda:
@@ -288,7 +288,6 @@ $ws->setCellValue('D15', 'SF: '  . $marca($data['sf']  ?? null));
 // DU, BH, CVC
 fillByMarker($ws, '{{DU}}', $data['du'] ?? '');
 fillByMarker($ws, '{{BH}}', $data['bh'] ?? '');
-fillByMarker($ws, '{{FLEBOS}}', $data['flebos'] ?? '');
 fillByMarker($ws, '{{CVC}}', $marca($data['cvc'] ?? null));
 
 // AISLAMIENTO, REGIMEN, VMI, SA, ESC, RASS, BIS, TOF

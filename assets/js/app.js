@@ -28,13 +28,12 @@ class Paciente {
       crea: 0,
       vfg: 0,
       reb: 0,
-      reposo: false,
+      reposo: '',
       la: false,
       sng: false,
       sf: false,
       du: "",
       bh: "",
-      flebos: "",
       cvc: false,
       aislamiento: '',
       regimen: '',
@@ -75,13 +74,12 @@ class Paciente {
       diagnostico:       val('diagnostico'),
       crea:              parseFloat(val('crea')) || 0,
       sesentaHolliday:   parseFloat(val('60Holliday')) || 0,
-      reposo:   chk('reposo'),
+      reposo:   val('reposo'),
       la:       chk('la'),
       sng:      chk('sng'),
       sf:       chk('sf'),
       du:       val("du"),
       bh:       val("bh"),
-      flebos:   val("flebos"),
       cvc:      chk('cvc'),
       aislamiento: val('aislamiento'),
       regimen:     val('regimen'),
@@ -156,13 +154,15 @@ class Paciente {
     set('vfg',(this._data.vfg||0).toFixed(2));
     set('reb',(typeof this._data.reb==='string') ? this._data.reb : (this._data.reb||0).toFixed(2));
 
-    setChk('reposo',this._data.reposo);
+    const reposoVal = typeof this._data.reposo === 'boolean'
+      ? (this._data.reposo ? 'SI' : '')
+      : (this._data.reposo || '');
+    set('reposo', reposoVal);
     setChk('la',this._data.la);
     setChk('sng',this._data.sng);
     setChk('sf',this._data.sf);
     set("du",this._data.du);
     set("bh",this._data.bh);
-    set("flebos",this._data.flebos);
     setChk('cvc',this._data.cvc);
 
     set('aislamiento',this._data.aislamiento);
@@ -209,13 +209,13 @@ class Paciente {
   calcularEdad(){
     if (!this._data.fechaNacimiento) {
       this._data.edad = '';
-      return '';
+      return 0;
     }
     const hoy = new Date();
     const n = new Date(this._data.fechaNacimiento);
     if (Number.isNaN(n.getTime())) {
       this._data.edad = '';
-      return '';
+      return 0;
     }
 
     let years = hoy.getFullYear() - n.getFullYear();
@@ -237,13 +237,10 @@ class Paciente {
       days = 0;
     }
 
-    const partes = [];
-    if (years) partes.push(`${years}a`);
-    if (months) partes.push(`${months}m`);
-    if (days || !partes.length) partes.push(`${days}d`);
-    const texto = partes.join(' ');
+    const unidad = (valor, singular, plural) => `${valor} ${valor === 1 ? singular : plural}`;
+    const texto = `${unidad(years, 'año', 'años')}, ${unidad(months, 'mes', 'meses')} y ${unidad(days, 'día', 'días')}`;
     this._data.edad = texto;
-    return texto;
+    return years + (months / 12) + (days / 365.25);
   }
 
   calcularDiasHospitalizacion(){
@@ -393,41 +390,6 @@ function populateSelectsFromConfig(){
     }
     ensureSearchableSelect(select, options);
   });
-}
-
-function populateFlebosFromArsenal(){
-  const select = document.getElementById('flebos');
-  if (!select) return;
-  const previous = select.value;
-  const options = [{
-    value: '',
-    label: 'Seleccione Flebos',
-    disabled: true,
-    selected: true
-  }];
-  const catalog = getMedicamentoCatalog();
-  catalog.forEach(item=>{
-    const nombre = (item.nombre || '').trim();
-    const codigo = (item.codigo || '').trim();
-    const value = nombre || codigo;
-    if (!value) return;
-    const label = codigo ? `${nombre} (${codigo})` : nombre;
-    options.push({ value, label });
-  });
-  select.innerHTML = '';
-  options.forEach(opt=>{
-    const option = document.createElement('option');
-    option.value = opt.value ?? '';
-    option.textContent = opt.label ?? opt.value ?? '';
-    if (opt.disabled) option.disabled = true;
-    if (opt.selected) option.selected = true;
-    select.appendChild(option);
-  });
-  if (previous && Array.from(select.options).some(opt=>opt.value === previous)){
-    select.value = previous;
-  }
-  select.dataset.placeholder = 'Buscar Flebos';
-  ensureSearchableSelect(select, options);
 }
 
 const DEFAULT_INTERVALO_OPTIONS = [
@@ -1478,7 +1440,6 @@ function updateMedicamentoCache(){
   applyArsenalSortOrder();
   window.ArsenalCatalog.medicamentos = [...arsenalState.lista];
   refreshMedicamentoInputs();
-  populateFlebosFromArsenal();
 }
 
 function refreshMedicamentoInputs(){
@@ -1741,7 +1702,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 
   populateSelectsFromConfig();
-  populateFlebosFromArsenal();
   const hoy = new Date();
   document.getElementById('fecha').value = hoy.toISOString().split('T')[0];
   document.getElementById('fechaIngreso').value = '';

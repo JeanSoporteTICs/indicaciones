@@ -193,7 +193,7 @@
                             <div class="form-group mb-3">
                                 <label>SC T/M2</label>
                                 <input type="text" class="form-control calculated-field" id="sctm2" readonly>
-                                <small class="form-text text-muted">Superficie Corporal (Mosteller)</small>
+                                <small class="form-text text-muted"></small>
                             </div>
                         </div>
                     </div>
@@ -259,10 +259,6 @@
                         <div class="col-md-12">
                             <div class="checkbox-group">
                                 <div class="checkbox-item">
-                                    <input class="form-check-input" type="checkbox" id="reposo">
-                                    <label class="form-check-label ms-2" for="reposo">Reposo</label>
-                                </div>
-                                <div class="checkbox-item">
                                     <input class="form-check-input" type="checkbox" id="la">
                                     <label class="form-check-label ms-2" for="la">LA</label>
                                 </div>
@@ -303,29 +299,6 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group mb-3">
-                                <label>ESC</label>
-                                <select class="form-select" id="esc"></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-3">
-                                <label>Regimen</label>
-                                <input type="text" class="form-control" id="regimen" placeholder="Ingresar regimen">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="form-group mb-3">
-                                <label>Flebos</label>
-                                <select class="form-select" id="flebos"></select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group mb-3">
                                 <label>BH</label>
                                 <select class="form-select" id="bh"></select>
                             </div>
@@ -334,8 +307,28 @@
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
+                                <label>Regimen</label>
+                                <input type="text" class="form-control" id="regimen" placeholder="Ingresar regimen">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label for="reposo">Reposo</label>
+                                <input type="text" class="form-control" id="reposo" placeholder="Ingresar reposo">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
                                 <label>RASS</label>
                                 <select class="form-select" id="rass"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group mb-3">
+                                <label>ESC</label>
+                                <select class="form-select" id="esc"></select>
                             </div>
                         </div>
                         <div class="col-md-3">

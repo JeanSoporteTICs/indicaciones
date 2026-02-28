@@ -24,12 +24,12 @@ $map = [
   'RUT'=>'rut','Ficha'=>'ficha','Peso'=>'peso','PesoIdeal'=>'pesoIdeal','Talla'=>'talla','SCTM2'=>'sctm2',
   'MedicoResponsable'=>'medicoResponsable','Diagnostico'=>'diagnostico','VolumenHolliday'=>'volumenHolliday',
   'VolumenSC'=>'volumenSC','CREA'=>'crea','VFG'=>'vfg','REB'=>'reb','Reposo'=>'reposo','LA'=>'la','SNG'=>'sng',
-  'SF'=>'sf','DU'=>'du','BH'=>'bh','Flebos'=>'flebos','CVC'=>'cvc','Aislamiento'=>'aislamiento','Regimen'=>'regimen',
+  'SF'=>'sf','DU'=>'du','BH'=>'bh','CVC'=>'cvc','Aislamiento'=>'aislamiento','Regimen'=>'regimen',
   'VM'=>'vm','AS'=>'sa','ESC'=>'esc','BIS'=>'bis','TOF'=>'tof','RASS'=>'rass','FechaReceta'=>'fechaReceta'
 ];
 foreach($map as $k=>$field){
   $val = $data[$field] ?? '';
-  if (in_array($field,['reposo','la','sng','sf','cvc'], true)) $val = !empty($val)?'SI':'NO';
+  if (in_array($field,['la','sng','sf','cvc'], true)) $val = !empty($val)?'SI':'NO';
   $w([$k, $val]);
 }
 
