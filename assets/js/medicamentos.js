@@ -1,5 +1,6 @@
 (function(){
   const MEDICAMENTO_SUGGESTION_LIMIT = 30;
+  let activeMedicamentoEntry = null;
 
   function getMedicamentoCatalog(){
     return Array.isArray(window.ArsenalCatalog?.medicamentos) ? window.ArsenalCatalog.medicamentos : [];
@@ -86,15 +87,30 @@
     input.dataset.codigo = match?.codigo || '';
   }
 
+  function positionMedicamentoPanel(entry){
+    if (!entry?.panel || !entry?.input) return;
+    const rect = entry.input.getBoundingClientRect();
+    entry.panel.style.position = 'fixed';
+    entry.panel.style.top = `${rect.bottom + 8}px`;
+    entry.panel.style.left = `${rect.left}px`;
+    entry.panel.style.width = `${rect.width}px`;
+  }
+
+  function syncActiveMedicamentoPanelPosition(){
+    if (!activeMedicamentoEntry?.panel?.classList.contains('show')) return;
+    positionMedicamentoPanel(activeMedicamentoEntry);
+  }
+
   function renderMedicamentoSuggestions(wrapper, term = ''){
     if (!wrapper) return;
     const input = wrapper.querySelector('.medicamento-input');
     if (!input) return;
-    let panel = wrapper.querySelector('.medicamento-suggestions');
+    let panel = wrapper._suggestionsPanel || wrapper.querySelector('.medicamento-suggestions');
     if (!panel){
       panel = document.createElement('div');
-      panel.className = 'medicamento-suggestions';
-      wrapper.appendChild(panel);
+      panel.className = 'medicamento-suggestions searchable-select-panel';
+      document.body.appendChild(panel);
+      wrapper._suggestionsPanel = panel;
     }
     panel.innerHTML = '';
     const matches = getMedicamentoMatches(term);
@@ -114,10 +130,13 @@
           ev.preventDefault();
           setMedicamentoInputValue(input, btn.dataset.codigo, btn.textContent);
           window.hideMedicamentoSuggestions(wrapper);
+          activeMedicamentoEntry = null;
         });
         panel.appendChild(btn);
       });
     }
+    activeMedicamentoEntry = { wrapper, input, panel };
+    positionMedicamentoPanel(activeMedicamentoEntry);
     panel.classList.add('show');
     wrapper.classList.add('suggestions-open');
   }
@@ -149,11 +168,12 @@
       wrapper.appendChild(icon);
     }
 
-    let panel = wrapper.querySelector('.medicamento-suggestions');
+    let panel = wrapper._suggestionsPanel || wrapper.querySelector('.medicamento-suggestions');
     if (!panel){
       panel = document.createElement('div');
-      panel.className = 'medicamento-suggestions';
-      wrapper.appendChild(panel);
+      panel.className = 'medicamento-suggestions searchable-select-panel';
+      document.body.appendChild(panel);
+      wrapper._suggestionsPanel = panel;
     }
 
     let input = wrapper.querySelector('input[name="m_medicamento"]');
@@ -173,9 +193,12 @@
       input.addEventListener('focus', ()=>renderMedicamentoSuggestions(wrapper, input.value));
       input.addEventListener('blur', ()=>{
         setTimeout(()=>{
-          const currentPanel = wrapper.querySelector('.medicamento-suggestions');
+          const currentPanel = wrapper._suggestionsPanel || wrapper.querySelector('.medicamento-suggestions');
           if (!currentPanel?.matches(':hover')){
             window.hideMedicamentoSuggestions(wrapper);
+            if (activeMedicamentoEntry?.wrapper === wrapper){
+              activeMedicamentoEntry = null;
+            }
           }
         }, 120);
       });
@@ -190,4 +213,6 @@
   window.setMedicamentoInputValue = setMedicamentoInputValue;
   window.ensureMedicamentoInput = ensureMedicamentoInput;
   window.safePopulateMedicSelects = safePopulateMedicSelects;
+  window.addEventListener('resize', syncActiveMedicamentoPanelPosition);
+  window.addEventListener('scroll', syncActiveMedicamentoPanelPosition, true);
 })();

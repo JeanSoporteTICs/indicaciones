@@ -163,7 +163,16 @@
     updateInput(entry);
   }
 
+  function syncSearchableSelectValue(target){
+    const select = typeof target === 'string' ? document.getElementById(target) : target;
+    if (!select) return;
+    const entry = searchableSelectRegistry.get(select);
+    if (!entry) return;
+    updateInput(entry);
+  }
+
   window.ensureSearchableSelect = ensureSearchableSelect;
   window.hideMedicamentoSuggestions = hideSuggestions;
   window.syncActiveSearchableSelectPanelPosition = syncActivePanelPosition;
+  window.syncSearchableSelectValue = syncSearchableSelectValue;
 })();

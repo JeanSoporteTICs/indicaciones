@@ -120,7 +120,14 @@ class Paciente {
   // Mostrar datos en formulario
   // =========================
   mostrarEnFormulario(){
-    const set = (id,v)=>{ const el=document.getElementById(id); if (el) el.value = (v ?? ''); };
+    const set = (id,v)=>{
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = (v ?? '');
+      if (el.tagName === 'SELECT' && typeof window.syncSearchableSelectValue === 'function'){
+        window.syncSearchableSelectValue(el);
+      }
+    };
     const setChk=(id,v)=>{ const el=document.getElementById(id); if (el) el.checked = !!v; };
 
     set('fecha',this._data.fecha);

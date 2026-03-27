@@ -370,7 +370,7 @@
                         </div>
                     </div>
                     <div class="medicamentos-toolbar">
-                        <small class="medicamentos-hint"></small>
+                        <small class="medicamentos-hint">Maximo 37 medicamentos por formulario.</small>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()" id="addMedicRowBtn">
                             <i class="fas fa-plus me-1"></i> Agregar Fila
                         </button>
