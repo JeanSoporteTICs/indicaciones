@@ -285,25 +285,41 @@
                                 <select class="form-select" id="aislamiento"></select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                    </div>
+
+                    <div class="row g-2 control-five">
+                        <div class="col-12 col-md-2">
                             <div class="form-group mb-3">
-                                <label>DU</label>
-                                <select class="form-select" id="du"></select>
+                                <label>RASS</label>
+                                <select class="form-select" id="rass"></select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-12 col-md-2">
                             <div class="form-group mb-3">
-                                <label>VM</label>
-                                <select class="form-select" id="vm"></select>
+                                <label>ESC</label>
+                                <select class="form-select" id="esc"></select>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-12 col-md-2">
                             <div class="form-group mb-3">
-                                <label>BH</label>
-                                <select class="form-select" id="bh"></select>
+                                <label>BIS</label>
+                                <select class="form-select" id="bis"></select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <div class="form-group mb-3">
+                                <label>TOF</label>
+                                <select class="form-select" id="tof"></select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-2">
+                            <div class="form-group mb-3">
+                                <label>WAT</label>
+                                <select class="form-select" id="wat"></select>
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-3">
                             <div class="form-group mb-3">
@@ -318,34 +334,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="form-group mb-3">
-                                <label>RASS</label>
-                                <select class="form-select" id="rass"></select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group mb-3">
-                                <label>ESC</label>
-                                <select class="form-select" id="esc"></select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group mb-3">
-                                <label>BIS</label>
-                                <select class="form-select" id="bis"></select>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group mb-3">
-                                <label>TOF</label>
-                                <select class="form-select" id="tof"></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
+                    <div class="row g-2 control-five">
+                        <div class="col-12 col-md-2">
                             <div class="form-group mb-3">
                                 <label>AS</label>
                                 <select class="form-select" id="sa"></select>
@@ -361,7 +351,9 @@
                     <i class="fas fa-pills me-2"></i>Medicamentos
                 </div>
                 <div class="card-body">
-                                        <table class="table table-bordered medicamento-table" id="medicamentos">
+                    <div class="medicamentos-surface">
+                        <div class="table-responsive">
+                            <table class="table table-bordered medicamento-table" id="medicamentos">
                         <thead>
                             <tr>
                                 <th width="40%">Medicamento</th>
@@ -373,11 +365,16 @@
                                 <th width="5%">Acción</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
-                    </table>
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()" id="addMedicRowBtn">
-                        <i class="fas fa-plus me-1"></i> Agregar Fila
-                    </button>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="medicamentos-toolbar">
+                        <small class="medicamentos-hint"></small>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addRowMedic()" id="addMedicRowBtn">
+                            <i class="fas fa-plus me-1"></i> Agregar Fila
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -607,7 +604,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/config.js"></script>
-<script src="assets/js/arsenal.js"></script>
+    <script src="assets/js/arsenal.js"></script>
+    <script src="assets/js/searchable-select.js"></script>
+    <script src="assets/js/medicamentos.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

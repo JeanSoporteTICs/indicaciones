@@ -297,12 +297,13 @@ fillByMarker($ws, '{{REGIMEN}}',     $data['regimen']     ?? '');
 
 fillByMarker($ws, '{{VM}}',         $data['vm']          ?? ($data['VM'] ?? ''));
 
-// SA, ESC, RASS, BIS, TOF
+// SA, ESC, RASS, BIS, TOF, WAT
 fillByMarker($ws, '{{SA}}',   $data['sa']   ?? '');
 fillByMarker($ws, '{{ESC}}',  $data['esc']  ?? '');
 fillByMarker($ws, '{{RASS}}', $data['rass'] ?? '');
 fillByMarker($ws, '{{BIS}}',  $data['bis']  ?? '');
 fillByMarker($ws, '{{TOF}}',  $data['tof']  ?? '');
+fillByMarker($ws, '{{WAT}}',  $data['wat']  ?? '');
 
 // SVC: si no tienes campo en el formulario, se queda vac­o (o usa cvc si quieres)
 fillByMarker($ws, '{{SVC}}', $data['svc'] ?? '');

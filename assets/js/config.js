@@ -427,6 +427,38 @@ window.SelectConfig = {
             "selected": false
         }
     ],
+    "wat": [
+        {
+            "value": "",
+            "label": "Seleccione WAT",
+            "disabled": true,
+            "selected": true
+        },
+        {
+            "value": "1",
+            "label": "1",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "2",
+            "label": "2",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": "3",
+            "label": "3",
+            "disabled": false,
+            "selected": false
+        },
+        {
+            "value": ">3",
+            "label": ">3",
+            "disabled": false,
+            "selected": false
+        }
+    ],
     "rass": [
         {
             "value": "",

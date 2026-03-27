@@ -42,6 +42,7 @@ class Paciente {
       esc: '',
       bis: '',
       tof: '',
+      wat: '',
       rass: '',
       fechaReceta: '',
       medicamentos: []      // â† solo una vez
@@ -88,6 +89,7 @@ class Paciente {
       esc:        val('esc'),
       bis:        val('bis'),
       tof:        val('tof'),
+      wat:        val('wat'),
       rass:       val('rass'),
       fechaReceta: val('fechaReceta')
     });
@@ -173,6 +175,7 @@ class Paciente {
 
     set('bis',this._data.bis);
     set('tof',this._data.tof);
+    set('wat',this._data.wat);
     set('rass',this._data.rass);
     set('fechaReceta',this._data.fechaReceta);
 
@@ -359,7 +362,6 @@ class Paciente {
 
 let pacienteActual = new Paciente();
 const importState = { isImported: false, fileName: '' };
-const searchableSelectRegistry = new Map();
 
 function setImportedState(flag, fileName = ''){
   importState.isImported = !!flag;
@@ -411,27 +413,6 @@ const DEFAULT_VIA_OPTIONS = [
   { value: 'OTRA', label: 'OTRA' }
 ];
 
-function getMedicamentoCatalog(){
-  return Array.isArray(window.ArsenalCatalog?.medicamentos) ? window.ArsenalCatalog.medicamentos : [];
-}
-
-const MEDICAMENTO_SUGGESTION_LIMIT = 30;
-
-function getMedicamentoMatches(term = ''){
-  const normalized = (term || '').trim().toLowerCase();
-  const catalog = getMedicamentoCatalog()
-    .map(item => ({
-      nombre: (item.nombre || '').trim(),
-      codigo: item.codigo || ''
-    }))
-    .filter(item => item.nombre);
-
-  if (!normalized) return catalog.slice(0, MEDICAMENTO_SUGGESTION_LIMIT);
-  return catalog
-    .filter(item => item.nombre.toLowerCase().includes(normalized))
-    .slice(0, MEDICAMENTO_SUGGESTION_LIMIT);
-}
-
 function buildOptionsFromConfig(key, placeholder, fallback){
   const cfg = Array.isArray(window.SelectConfig?.[key]) ? window.SelectConfig[key] : null;
   if (cfg){
@@ -476,313 +457,10 @@ function setSelectOptions(select, options, selectedValue=''){
     if (match) select.value = selectedValue;
   }
 }
-
-function populateMedicSelects(row, data = {}){
-  if (!row) return;
-  const intervaloSel = row.querySelector('select[name="m_intervalo"]');
-  const viaSel = row.querySelector('select[name="m_via"]');
-  const intervaloOpts = buildOptionsFromConfig('intervalo', 'Intervalo', DEFAULT_INTERVALO_OPTIONS);
-  const viaOpts = buildOptionsFromConfig('via', 'Vía', DEFAULT_VIA_OPTIONS);
-  if (intervaloSel){
-    setSelectOptions(intervaloSel, intervaloOpts, data.intervalo || '');
-  }
-  if (viaSel){
-    setSelectOptions(viaSel, viaOpts, data.via || '');
-  }
-}
-
-function safePopulateMedicSelects(row, data = {}){
-  if (typeof populateMedicSelects === 'function'){
-    populateMedicSelects(row, data);
-    return;
-  }
-  // Fallback simple por si no está definido (no debería suceder)
-  const intervaloSel = row?.querySelector('select[name="m_intervalo"]');
-  const viaSel = row?.querySelector('select[name="m_via"]');
-  if (intervaloSel){
-    setSelectOptions(intervaloSel, DEFAULT_INTERVALO_OPTIONS, data.intervalo || '');
-  }
-  if (viaSel){
-    setSelectOptions(viaSel, DEFAULT_VIA_OPTIONS, data.via || '');
-  }
-}
-
-function renderMedicamentoSuggestions(wrapper, term = ''){
-  if (!wrapper) return;
-  const input = wrapper.querySelector('.medicamento-input');
-  if (!input) return;
-  let panel = wrapper.querySelector('.medicamento-suggestions');
-  if (!panel){
-    panel = document.createElement('div');
-    panel.className = 'medicamento-suggestions';
-    wrapper.appendChild(panel);
-  }
-  panel.innerHTML = '';
-  const matches = getMedicamentoMatches(term);
-  if (!matches.length){
-    const empty = document.createElement('div');
-    empty.className = 'medicamento-suggestion text-muted';
-    empty.textContent = 'Sin resultados';
-    panel.appendChild(empty);
-  } else {
-    matches.forEach(item=>{
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'medicamento-suggestion';
-      btn.textContent = item.nombre;
-      btn.dataset.codigo = item.codigo || '';
-      btn.addEventListener('mousedown', ev=>{
-        ev.preventDefault();
-        setMedicamentoInputValue(input, btn.dataset.codigo, btn.textContent);
-        hideMedicamentoSuggestions(wrapper);
-      });
-      panel.appendChild(btn);
-    });
-  }
-  panel.classList.add('show');
-}
-
-function hideMedicamentoSuggestions(wrapper){
-  if (!wrapper) return;
-  const panel = wrapper.querySelector('.medicamento-suggestions');
-  if (panel){
-    panel.classList.remove('show');
-  }
-}
-
-function ensureSearchableSelect(select, configOptions){
-  if (!select || !Array.isArray(configOptions)) return;
-  const normalizedOptions = configOptions.map(opt=>({
-    value: opt.value ?? '',
-    label: opt.label ?? opt.value ?? '',
-    disabled: !!opt.disabled,
-    selected: !!opt.selected
-  }));
-  let entry = searchableSelectRegistry.get(select);
-  if (!entry){
-    entry = createSearchableSelectWrapper(select);
-    searchableSelectRegistry.set(select, entry);
-  }
-  entry.options = normalizedOptions;
-  entry.placeholder = getSearchableSelectPlaceholder(normalizedOptions);
-  updateSearchableSelectInput(entry);
-}
-
-function createSearchableSelectWrapper(select){
-  select.classList.add('d-none');
-  const wrapper = document.createElement('div');
-  wrapper.className = 'medicamento-input-wrapper searchable-select';
-  select.insertAdjacentElement('afterend', wrapper);
-
-  const icon = document.createElement('i');
-  icon.className = 'fas fa-search medicamento-input-icon';
-  wrapper.appendChild(icon);
-
-  const input = document.createElement('input');
-  input.type = 'search';
-  input.className = 'form-control medicamento-input';
-  input.placeholder = select.dataset.placeholder || 'Buscar opción';
-  input.autocomplete = 'off';
-  wrapper.appendChild(input);
-
-  const panel = document.createElement('div');
-  panel.className = 'medicamento-suggestions';
-  wrapper.appendChild(panel);
-
-  input.addEventListener('input', ()=>renderSearchableSelectSuggestions(select));
-  input.addEventListener('focus', ()=>renderSearchableSelectSuggestions(select));
-  input.addEventListener('blur', ()=>setTimeout(()=>hideMedicamentoSuggestions(wrapper),120));
-  input.addEventListener('change', ()=>commitSearchableInputValue(select));
-
-  return { wrapper, input, panel, options: [], select, placeholder: '' };
-}
-
-function getSearchableSelectPlaceholder(options){
-  const placeholderOpt = options.find(opt => opt.disabled && opt.selected) ||
-    options.find(opt => opt.disabled && (opt.value === '' || opt.value === null));
-  return placeholderOpt ? (placeholderOpt.label || placeholderOpt.value || '') : '';
-}
-
-function renderSearchableSelectSuggestions(select){
-  const entry = searchableSelectRegistry.get(select);
-  if (!entry) return;
-  const term = (entry.input.value || '').toLowerCase();
-  const panel = entry.panel;
-  panel.innerHTML = '';
-  const matches = entry.options
-    .filter(opt=>{
-      if (opt.disabled) return false;
-      if (!term) return true;
-      return (opt.label || '').toLowerCase().includes(term) || (opt.value || '').toLowerCase().includes(term);
-    })
-    .slice(0, MEDICAMENTO_SUGGESTION_LIMIT);
-  if (!matches.length){
-    const empty = document.createElement('div');
-    empty.className = 'medicamento-suggestion-empty';
-    empty.textContent = 'Sin resultados';
-    panel.appendChild(empty);
-  } else {
-    matches.forEach(opt=>{
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'medicamento-suggestion';
-      btn.textContent = opt.label || opt.value || '(sin etiqueta)';
-      btn.dataset.value = opt.value || '';
-      btn.addEventListener('mousedown', ev=>{
-        ev.preventDefault();
-        pickSearchableSelectOption(select, opt);
-      });
-      panel.appendChild(btn);
-    });
-  }
-  panel.classList.add('show');
-}
-
-function pickSearchableSelectOption(select, option){
-  const entry = searchableSelectRegistry.get(select);
-  if (!entry) return;
-  select.value = option.value || '';
-  entry.input.value = option.label || option.value || '';
-  entry.input.placeholder = entry.placeholder || entry.input.placeholder;
-  select.dispatchEvent(new Event('change', { bubbles: true }));
-  hideMedicamentoSuggestions(entry.wrapper);
-}
-
-function commitSearchableInputValue(select){
-  const entry = searchableSelectRegistry.get(select);
-  if (!entry) return;
-  const value = (entry.input.value || '').toLowerCase();
-  const match = entry.options.find(opt =>
-    (opt.label || '').toLowerCase() === value ||
-    (opt.value || '').toLowerCase() === value
-  );
-  if (match){
-    pickSearchableSelectOption(select, match);
-  } else {
-    updateSearchableSelectInput(entry);
-  }
-}
-
-function updateSearchableSelectInput(entry){
-  const selectValue = entry.select.value;
-  if ((!selectValue || selectValue === '') && entry.placeholder){
-    entry.input.value = '';
-    entry.input.placeholder = entry.placeholder;
-    return;
-  }
-  const current = entry.options.find(opt => opt.value === selectValue);
-  if (current){
-    entry.input.value = current.label || current.value || '';
-    entry.input.placeholder = entry.placeholder || entry.input.placeholder;
-  } else {
-    entry.input.value = '';
-    entry.input.placeholder = entry.placeholder || entry.input.placeholder;
-  }
-}
-
-function findMedicamentoByCode(code){
-  if (!code) return null;
-  return getMedicamentoCatalog().find(m => m.codigo === code) || null;
-}
-
-function findMedicamentoByName(nombre){
-  if (!nombre) return null;
-  const normalized = nombre.trim().toLowerCase();
-  return getMedicamentoCatalog().find(m => (m.nombre || '').toLowerCase() === normalized) || null;
-}
-
-function setMedicamentoInputValue(input, codigo = '', nombre = ''){
-  if (!input) return;
-  let targetName = nombre;
-  let targetCode = codigo;
-  if (codigo){
-    const item = findMedicamentoByCode(codigo);
-    if (item){
-      targetName = item.nombre || targetName;
-      targetCode = item.codigo || targetCode;
-    }
-  } else if (nombre){
-    const item = findMedicamentoByName(nombre);
-    if (item){
-      targetName = item.nombre || targetName;
-      targetCode = item.codigo || targetCode;
-    }
-  }
-  input.value = targetName || '';
-  input.dataset.codigo = targetCode || '';
-}
-
-function handleMedicamentoInput(e){
-  const input = e.target;
-  const val = input.value.trim();
-  const match = findMedicamentoByName(val);
-  input.dataset.codigo = match?.codigo || '';
-}
-
-function ensureMedicamentoInput(row, selectedCode = '', fallbackName = ''){
-  if (!row) return;
-  let cell = row.querySelector('.medicamento-cell');
-  if (!cell){
-    cell = row.querySelector('td');
-    if (!cell){
-      cell = document.createElement('td');
-      row.prepend(cell);
-    }
-    cell.classList.add('medicamento-cell');
-  }
-
-  let wrapper = cell.querySelector('.medicamento-input-wrapper');
-  if (!wrapper){
-    wrapper = document.createElement('div');
-    wrapper.className = 'medicamento-input-wrapper';
-    cell.innerHTML = '';
-    cell.appendChild(wrapper);
-  }
-
-  let icon = wrapper.querySelector('.medicamento-input-icon');
-  if (!icon){
-    icon = document.createElement('i');
-    icon.className = 'fas fa-search medicamento-input-icon';
-    wrapper.appendChild(icon);
-  }
-
-  let panel = wrapper.querySelector('.medicamento-suggestions');
-  if (!panel){
-    panel = document.createElement('div');
-    panel.className = 'medicamento-suggestions';
-    wrapper.appendChild(panel);
-  }
-
-  let input = wrapper.querySelector('input[name="m_medicamento"]');
-  if (!input){
-    input = document.createElement('input');
-    input.type = 'search';
-    input.name = 'm_medicamento';
-    input.className = 'form-control medicamento-input';
-    input.placeholder = 'Buscar medicamento';
-    input.setAttribute('autocomplete', 'off');
-    wrapper.appendChild(input);
-    input.addEventListener('input', e=>{
-      handleMedicamentoInput(e);
-      renderMedicamentoSuggestions(wrapper, e.target.value);
-    });
-    input.addEventListener('change', handleMedicamentoInput);
-    input.addEventListener('focus', ()=>{
-      renderMedicamentoSuggestions(wrapper, input.value);
-    });
-    input.addEventListener('blur', ()=>{
-      setTimeout(()=>{
-        const panel = wrapper.querySelector('.medicamento-suggestions');
-        if (!panel?.matches(':hover')){
-          hideMedicamentoSuggestions(wrapper);
-        }
-      }, 120);
-    });
-  }
-
-  setMedicamentoInputValue(input, selectedCode, fallbackName);
-  hideMedicamentoSuggestions(wrapper);
-}
+window.DEFAULT_INTERVALO_OPTIONS = DEFAULT_INTERVALO_OPTIONS;
+window.DEFAULT_VIA_OPTIONS = DEFAULT_VIA_OPTIONS;
+window.buildOptionsFromConfig = buildOptionsFromConfig;
+window.setSelectOptions = setSelectOptions;
 
 // =========================
 // Utilidades UI
@@ -1129,6 +807,8 @@ document.addEventListener('click', e=>{
     }
   });
 });
+window.addEventListener('resize', syncActiveSearchableSelectPanelPosition);
+window.addEventListener('scroll', syncActiveSearchableSelectPanelPosition, true);
 
 // =========================
 // CRUD SelectConfig
@@ -1162,7 +842,21 @@ function renderConfigSelector(){
   const select = document.getElementById('configListSelector');
   if (!select) return;
   const keys = Object.keys(configState.data);
-  const keyLabels = { sa: 'AS' };
+  const keyLabels = {
+    sa: 'AS',
+    wat: 'WAT',
+    rass: 'RASS',
+    esc: 'ESC',
+    bis: 'BIS',
+    tof: 'TOF',
+    aislamiento: 'Aislamiento',
+    regimen: 'Regimen',
+    du: 'DU',
+    bh: 'BH',
+    vm: 'VM',
+    sexo: 'Sexo',
+    cama: 'Cama'
+  };
   select.innerHTML = '';
   if (!keys.length){
     const opt = document.createElement('option');
