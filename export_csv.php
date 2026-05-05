@@ -29,7 +29,7 @@ $map = [
 ];
 foreach($map as $k=>$field){
   $val = $data[$field] ?? '';
-  if (in_array($field,['la','sng','sf','cvc'], true)) $val = !empty($val)?'SI':'NO';
+  if (in_array($field,['la','sng','sf','du','bh','cvc'], true)) $val = !empty($val)?'SI':'NO';
   $w([$k, $val]);
 }
 

@@ -78,6 +78,7 @@
     }
     input.value = targetName || '';
     input.dataset.codigo = targetCode || '';
+    window.updateSectionCompletionStatus?.();
   }
 
   function handleMedicamentoInput(event){

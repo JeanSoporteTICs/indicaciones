@@ -32,8 +32,8 @@ class Paciente {
       la: false,
       sng: false,
       sf: false,
-      du: "",
-      bh: "",
+      du: false,
+      bh: false,
       cvc: false,
       aislamiento: '',
       regimen: '',
@@ -79,8 +79,8 @@ class Paciente {
       la:       chk('la'),
       sng:      chk('sng'),
       sf:       chk('sf'),
-      du:       val("du"),
-      bh:       val("bh"),
+      du:       chk('du'),
+      bh:       chk('bh'),
       cvc:      chk('cvc'),
       aislamiento: val('aislamiento'),
       regimen:     val('regimen'),
@@ -170,8 +170,8 @@ class Paciente {
     setChk('la',this._data.la);
     setChk('sng',this._data.sng);
     setChk('sf',this._data.sf);
-    set("du",this._data.du);
-    set("bh",this._data.bh);
+    setChk('du',this._data.du);
+    setChk('bh',this._data.bh);
     setChk('cvc',this._data.cvc);
 
     set('aislamiento',this._data.aislamiento);
@@ -216,6 +216,13 @@ class Paciente {
   // =========================
   // CÃ¡lculos
   // =========================
+  normalizarSexo(){
+    const sx = (this._data.sexo || '').toString().trim().toLowerCase();
+    if (['m', 'masculino', 'hombre', 'varon', 'varón'].includes(sx)) return 'M';
+    if (['f', 'femenino', 'mujer'].includes(sx)) return 'F';
+    return '';
+  }
+
   calcularEdad(){
     if (!this._data.fechaNacimiento) {
       this._data.edad = '';
@@ -264,12 +271,15 @@ class Paciente {
   }
 
   calcularPesoIdeal(){
-    const {sexo,talla} = this._data;
-    if (!sexo || !talla) return 0;
-    const sx = (sexo || '').toString().trim().toLowerCase();
-    if (sx === 'm' || sx === 'masculino') {
+    const {talla} = this._data;
+    const sexo = this.normalizarSexo();
+    if (!sexo || !talla) {
+      this._data.pesoIdeal = 0;
+      return 0;
+    }
+    if (sexo === 'M') {
       this._data.pesoIdeal = 50 + 0.91*(talla-152.4);
-    } else if (sx === 'f' || sx === 'femenino') {
+    } else if (sexo === 'F') {
       this._data.pesoIdeal = 45.5 + 0.91*(talla-152.4);
     } else {
       this._data.pesoIdeal = 0;
@@ -312,18 +322,22 @@ class Paciente {
   }
 
   calcularREB(){
-    const {sexo,fechaNacimiento,peso,talla} = this._data;
-    if (!sexo || !fechaNacimiento || !peso || !talla) return 0;
+    const {fechaNacimiento,peso,talla} = this._data;
+    const sexo = this.normalizarSexo();
+    if (!sexo || !fechaNacimiento || !peso || !talla) {
+      this._data.reb = 0;
+      return 0;
+    }
     const e = this.calcularEdad();
     if (e>=18){
-      this._data.reb = (sexo==='M')
+      this._data.reb = (sexo === 'M')
         ? (66.5 + 13.75*peso + 5.003*talla - 6.755*e)
         : (655.1 + 9.563*peso + 1.850*talla - 4.676*e);
       return this._data.reb;
     }
     if (e<3)      this._data.reb = (peso*60)-54;
     else if(e<=10) this._data.reb = (peso*22)+504;
-    else           this._data.reb = (sexo==='M') ? ((peso*17.5)+651) : ((peso*12.2)+746);
+    else           this._data.reb = (sexo === 'M') ? ((peso*17.5)+651) : ((peso*12.2)+746);
     return this._data.reb;
   }
 
@@ -380,6 +394,7 @@ function populateSelectsFromConfig(){
   Object.entries(window.SelectConfig).forEach(([id, options])=>{
     const select = document.getElementById(id);
     if (!select) return;
+    if (select.tagName !== 'SELECT') return;
     const previousValue = select.value;
     select.innerHTML = '';
     let hasExplicitSelection = false;
@@ -476,6 +491,7 @@ function removeRow(btn){
   const tr = btn.closest('tr');
   tr?.parentNode.removeChild(tr);
   toggleAddMedicButton();
+  updateSectionCompletionStatus();
 }
 
 function syncFechaReceta(){
@@ -485,6 +501,147 @@ function syncFechaReceta(){
     fechaReceta.value = fecha.value || '';
   }
 }
+
+function todayIsoDate(){
+  return new Date().toISOString().split('T')[0];
+}
+
+function syncFechaNacimientoMax(){
+  const fechaNacimiento = document.getElementById('fechaNacimiento');
+  const fechaIngreso = document.getElementById('fechaIngreso');
+  if (!fechaNacimiento) return;
+
+  fechaNacimiento.max = fechaIngreso?.value || todayIsoDate();
+}
+
+function validateFechaNacimiento(){
+  const fechaNacimiento = document.getElementById('fechaNacimiento');
+  const fechaIngreso = document.getElementById('fechaIngreso');
+  if (!fechaNacimiento) return true;
+
+  syncFechaNacimientoMax();
+  fechaNacimiento.setCustomValidity('');
+  fechaNacimiento.classList.remove('is-invalid');
+
+  if (!fechaNacimiento.value) {
+    return true;
+  }
+
+  const maxDate = fechaIngreso?.value || todayIsoDate();
+  const message = fechaIngreso?.value
+    ? 'La fecha de nacimiento no puede ser posterior a la fecha de ingreso.'
+    : 'La fecha de nacimiento no puede ser posterior a hoy.';
+
+  if (fechaNacimiento.value > maxDate) {
+    fechaNacimiento.setCustomValidity(message);
+    fechaNacimiento.classList.add('is-invalid');
+    return false;
+  }
+
+  return true;
+}
+
+function hasValue(id){
+  const el = document.getElementById(id);
+  if (!el) return false;
+  return String(el.value || '').trim() !== '';
+}
+
+function hasPositiveNumber(id){
+  const el = document.getElementById(id);
+  if (!el) return false;
+  const raw = String(el.value || '').trim().replace(',', '.');
+  if (raw === '') return false;
+  const value = Number(raw);
+  return Number.isFinite(value) && value > 0;
+}
+
+function hasChecked(ids){
+  return ids.some(id => document.getElementById(id)?.checked);
+}
+
+function hasMedicamentos(){
+  return Array.from(document.querySelectorAll('#medicamentos tbody tr')).some(row => {
+    const input = row.querySelector('input[name="m_medicamento"]');
+    return String(input?.value || input?.dataset?.codigo || '').trim() !== '';
+  });
+}
+
+function getCompletionRatio(checks){
+  if (!checks.length) return 0;
+  const completed = checks.filter(Boolean).length;
+  return completed / checks.length;
+}
+
+function getSectionCompletionRatios(){
+  return {
+    datos: getCompletionRatio([
+      hasValue('fecha'),
+      hasValue('fechaIngreso'),
+      hasValue('fechaNacimiento') && validateFechaNacimiento(),
+      hasValue('cama'),
+      hasValue('sexo'),
+      hasValue('nombrePaciente'),
+      hasValue('rut'),
+      hasValue('ficha'),
+      hasValue('medicoResponsable')
+    ]),
+    antropometricos: getCompletionRatio([
+      hasPositiveNumber('peso'),
+      hasPositiveNumber('talla')
+    ]),
+    indicaciones: getCompletionRatio([
+      hasChecked(['la', 'sng', 'sf', 'du', 'bh', 'cvc']),
+      hasValue('aislamiento'),
+      hasValue('rass'),
+      hasValue('esc'),
+      hasValue('bis'),
+      hasValue('tof'),
+      hasValue('wat'),
+      hasValue('regimen'),
+      hasValue('reposo'),
+      hasValue('sa')
+    ]),
+    medicamentos: hasMedicamentos() ? 1 : 0
+  };
+}
+
+function setSectionStatus(section, complete){
+  const item = document.querySelector(`[data-section-status="${section}"]`);
+  if (!item) return;
+  item.classList.toggle('is-complete', complete);
+  item.setAttribute('aria-checked', complete ? 'true' : 'false');
+}
+
+function updateSectionStepperState(ratios){
+  const board = document.getElementById('sectionStatusBoard');
+  if (!board) return;
+  const items = Array.from(board.querySelectorAll('.section-status-item'));
+  if (!items.length) return;
+
+  const firstIncompleteIndex = items.findIndex(item => !item.classList.contains('is-complete'));
+  const activeIndex = firstIncompleteIndex === -1 ? items.length - 1 : firstIncompleteIndex;
+
+  items.forEach((item, index) => {
+    item.classList.toggle('is-active', index === activeIndex && !item.classList.contains('is-complete'));
+  });
+
+  const progressSegments = Math.min(
+    (ratios?.datos || 0) + (ratios?.antropometricos || 0) + (ratios?.indicaciones || 0),
+    items.length - 1
+  );
+  board.style.setProperty('--step-progress', `${progressSegments * 25}%`);
+}
+
+function updateSectionCompletionStatus(){
+  const ratios = getSectionCompletionRatios();
+  setSectionStatus('datos', ratios.datos === 1);
+  setSectionStatus('antropometricos', ratios.antropometricos === 1);
+  setSectionStatus('indicaciones', ratios.indicaciones === 1);
+  setSectionStatus('medicamentos', ratios.medicamentos === 1);
+  updateSectionStepperState(ratios);
+}
+window.updateSectionCompletionStatus = updateSectionCompletionStatus;
 
 function clearTablaRecetas(){
   const tablaRecetas = document.querySelector('#tablaRecetas tbody');
@@ -530,12 +687,21 @@ function handleRutInput(){
 }
 
 function calcularYActualizar(){
+  validateFechaNacimiento();
   pacienteActual.cargarDesdeFormulario();
   pacienteActual.calcularTodo();
   pacienteActual.mostrarEnFormulario();
+  updateSectionCompletionStatus();
 }
 
 function guardarDatos(){
+  if (!validateFechaNacimiento()){
+    showAppModal(document.getElementById('fechaNacimiento')?.validationMessage || 'Revise la fecha de nacimiento.', 'Fecha inválida');
+    document.getElementById('fechaNacimiento')?.focus();
+    updateSectionCompletionStatus();
+    return;
+  }
+
   const req = ['fecha','fechaIngreso','fechaNacimiento','cama','sexo','nombrePaciente','rut','ficha','peso','talla','medicoResponsable'];
   const miss = [];
   req.forEach(id=>{
@@ -579,6 +745,8 @@ async function cargarExcelDesdeArchivo(file){
     const data = await resp.json();
     pacienteActual.setData(data);
     pacienteActual.mostrarEnFormulario();
+    validateFechaNacimiento();
+    updateSectionCompletionStatus();
     setImportedState(true, file.name || '');
     alert('Archivo importado correctamente');
   } catch(err){
@@ -618,6 +786,8 @@ function nuevoFormulario(){
   }
   document.getElementById('hora').value = hoy.toTimeString().substring(0,5);
   setImportedState(false);
+  syncFechaNacimientoMax();
+  updateSectionCompletionStatus();
 }
 
 // =========================
@@ -650,6 +820,7 @@ function addRowMedic() {
     ensureMedicamentoInput(tr);
     safePopulateMedicSelects(tr);
     toggleAddMedicButton();
+    updateSectionCompletionStatus();
 }
 
 function toggleAddMedicButton(forceHide=false){
@@ -758,6 +929,12 @@ function postDownload(url, payload){
 
 // Export que usa la plantilla 11.11.25.xlsx (multi-hoja)
 function exportAll(){
+  if (!validateFechaNacimiento()){
+    showAppModal(document.getElementById('fechaNacimiento')?.validationMessage || 'Revise la fecha de nacimiento.', 'Fecha inválida');
+    document.getElementById('fechaNacimiento')?.focus();
+    return;
+  }
+
   pacienteActual.cargarDesdeFormulario();
   pacienteActual.calcularTodo();
   const data = pacienteActual.getData();
@@ -776,6 +953,12 @@ function exportAll(){
 
 // Si sigues usando export_tpl.php (opcional)
 function exportTpl(){
+  if (!validateFechaNacimiento()){
+    showAppModal(document.getElementById('fechaNacimiento')?.validationMessage || 'Revise la fecha de nacimiento.', 'Fecha inválida');
+    document.getElementById('fechaNacimiento')?.focus();
+    return;
+  }
+
   pacienteActual.cargarDesdeFormulario();
   pacienteActual.calcularTodo();
   const data = pacienteActual.getData();
@@ -790,6 +973,18 @@ function exportTpl(){
   const el=document.getElementById(id);
   if(el) el.addEventListener('change', calcularYActualizar);
 });
+
+document.getElementById('fechaIngreso')?.addEventListener('input', ()=>{
+  validateFechaNacimiento();
+  updateSectionCompletionStatus();
+});
+document.getElementById('fechaNacimiento')?.addEventListener('input', ()=>{
+  validateFechaNacimiento();
+  updateSectionCompletionStatus();
+});
+
+document.getElementById('hospitalizacionForm')?.addEventListener('input', updateSectionCompletionStatus);
+document.getElementById('hospitalizacionForm')?.addEventListener('change', updateSectionCompletionStatus);
 
 document.getElementById('saveBtn')?.addEventListener('click', guardarDatos);
 document.getElementById('newBtn')?.addEventListener('click', nuevoFormulario);
@@ -1424,9 +1619,12 @@ document.addEventListener('DOMContentLoaded',()=>{
         addRowMedic();
       }
       clearTablaRecetas();
+      updateSectionCompletionStatus();
     },0);
   });
   syncFechaReceta();
+  syncFechaNacimientoMax();
+  validateFechaNacimiento();
 
   const tbody = document.querySelector('#medicamentos tbody');
   if (tbody){
@@ -1439,4 +1637,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   toggleAddMedicButton();
 
   renderArsenalTable();
+  updateSectionCompletionStatus();
 });
