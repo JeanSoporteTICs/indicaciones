@@ -39,6 +39,17 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
+$missingExtensions = [];
+if (!class_exists('ZipArchive')) {
+    $missingExtensions[] = 'zip';
+}
+if (!class_exists('XMLReader') || !class_exists('XMLWriter')) {
+    $missingExtensions[] = 'xml';
+}
+if ($missingExtensions) {
+    fail('Faltan extensiones PHP requeridas para generar archivos Excel: ' . implode(', ', $missingExtensions) . '. Habilítelas en el servidor y reinicie Apache/PHP.', 500);
+}
+
 // --- Cargar plantilla ---
 $templatePath = __DIR__ . '/templates/11.11.25.xlsx';
 if (!file_exists($templatePath)) {

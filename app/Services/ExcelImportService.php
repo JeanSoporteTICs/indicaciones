@@ -11,6 +11,8 @@ final class ExcelImportService
 {
     public function extractEmbeddedData(string $tmpPath): array
     {
+        $this->assertSpreadsheetExtensions();
+
         try {
             $spreadsheet = IOFactory::load($tmpPath);
         } catch (Throwable $e) {
@@ -29,5 +31,23 @@ final class ExcelImportService
         }
 
         return $data;
+    }
+
+    private function assertSpreadsheetExtensions(): void
+    {
+        $missing = [];
+        if (!class_exists(\ZipArchive::class)) {
+            $missing[] = 'zip';
+        }
+        if (!class_exists(\XMLReader::class) || !class_exists(\XMLWriter::class)) {
+            $missing[] = 'xml';
+        }
+
+        if ($missing) {
+            throw new RuntimeException(
+                'Faltan extensiones PHP requeridas para leer archivos Excel: ' . implode(', ', $missing) . '. Habilítelas en el servidor y reinicie Apache/PHP.',
+                500
+            );
+        }
     }
 }
