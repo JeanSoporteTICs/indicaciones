@@ -653,7 +653,7 @@ function clearTablaRecetas(){
 function showAppModal(message, title='Aviso'){
   const modalEl = document.getElementById('appModal');
   if (!modalEl){
-    alert(message);
+    console.warn(message);
     return;
   }
   const titleEl = document.getElementById('appModalLabel');
@@ -666,6 +666,51 @@ function showAppModal(message, title='Aviso'){
     modalEl.classList.add('show');
     modalEl.style.display = 'block';
   }
+}
+
+function showConfirmModal(message, title='Confirmar'){
+  const modalEl = document.getElementById('confirmModal');
+  if (!modalEl){
+    return Promise.resolve(false);
+  }
+
+  const titleEl = document.getElementById('confirmModalLabel');
+  const bodyEl = document.getElementById('confirmModalBody');
+  const acceptBtn = modalEl.querySelector('[data-confirm-result="accept"]');
+  const cancelBtn = modalEl.querySelector('[data-confirm-result="cancel"]');
+  if (titleEl) titleEl.textContent = title;
+  if (bodyEl) bodyEl.innerHTML = (message || '').split('\n').map(line=>line.trim()).filter(Boolean).join('<br>');
+
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = value => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(value);
+      const modal = window.bootstrap?.Modal?.getInstance(modalEl);
+      modal?.hide();
+    };
+    const onAccept = () => finish(true);
+    const onCancel = () => finish(false);
+    const onHidden = () => finish(false);
+    const cleanup = () => {
+      acceptBtn?.removeEventListener('click', onAccept);
+      cancelBtn?.removeEventListener('click', onCancel);
+      modalEl.removeEventListener('hidden.bs.modal', onHidden);
+    };
+
+    acceptBtn?.addEventListener('click', onAccept);
+    cancelBtn?.addEventListener('click', onCancel);
+    modalEl.addEventListener('hidden.bs.modal', onHidden);
+
+    if (window.bootstrap?.Modal){
+      bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    } else {
+      modalEl.classList.add('show');
+      modalEl.style.display = 'block';
+    }
+  });
 }
 
 function handleRutInput(){
@@ -717,7 +762,7 @@ function guardarDatos(){
     return;
   }
   if (!importState.isImported){
-    alert('Esta acción solo aplica a archivos cargados.');
+    showAppModal('Esta acción solo aplica a archivos cargados.', 'Acción no disponible');
     return;
   }
   pacienteActual.cargarDesdeFormulario();
@@ -748,15 +793,16 @@ async function cargarExcelDesdeArchivo(file){
     validateFechaNacimiento();
     updateSectionCompletionStatus();
     setImportedState(true, file.name || '');
-    alert('Archivo importado correctamente');
+    showAppModal('Archivo importado correctamente.', 'Importación completa');
   } catch(err){
     console.error(err);
-    alert('No se pudo importar el archivo:\n'+err.message);
+    showAppModal('No se pudo importar el archivo:\n'+err.message, 'Error de importación');
   }
 }
 
-function nuevoFormulario(){
-  if(!confirm('¿Crear nuevo formulario?')) return;
+async function nuevoFormulario(){
+  const confirmed = await showConfirmModal('¿Crear nuevo formulario?', 'Nuevo formulario');
+  if(!confirmed) return;
   pacienteActual = new Paciente();
   document.getElementById('hospitalizacionForm').reset();
 
@@ -798,7 +844,7 @@ function addRowMedic() {
     if (!tbody) return;
     const currentRows = tbody.querySelectorAll('tr').length;
     if (currentRows >= 37){
-      alert('Solo se permiten hasta 37 medicamentos por formulario.');
+      showAppModal('Solo se permiten hasta 37 medicamentos por formulario.', 'Límite de medicamentos');
       toggleAddMedicButton(true);
       return;
     }
@@ -1130,10 +1176,10 @@ async function sendCatalogToServer(target, data, successMessage, errorMessage){
       const msg = result.error || text || `Error ${response.status}`;
       throw new Error(msg);
     }
-    alert(result.message || successMessage);
+    showAppModal(result.message || successMessage, 'Guardado');
   } catch(err){
     console.error(err);
-    alert((errorMessage || 'No se pudo guardar la información')+'\n'+err.message);
+    showAppModal((errorMessage || 'No se pudo guardar la información')+'\n'+err.message, 'Error al guardar');
   }
 }
 
@@ -1182,7 +1228,7 @@ function saveConfigOption(){
   const disabled = document.getElementById('configOptionDisabled')?.checked || false;
   const selected = document.getElementById('configOptionSelected')?.checked || false;
   if (!label){
-    alert('Ingrese una etiqueta');
+    showAppModal('Ingrese una etiqueta.', 'Dato requerido');
     return;
   }
   const list = configState.data[configState.currentKey] || [];
@@ -1210,9 +1256,10 @@ function saveConfigOption(){
   }, { once: true });
 }
 
-function deleteConfigOption(index){
+async function deleteConfigOption(index){
   if (!configState.currentKey) return;
-  if (!confirm('Â¿Eliminar este elemento?')) return;
+  const confirmed = await showConfirmModal('¿Eliminar este elemento?', 'Eliminar elemento');
+  if (!confirmed) return;
   const list = configState.data[configState.currentKey] || [];
   list.splice(index,1);
   configState.data[configState.currentKey] = list;
@@ -1308,7 +1355,7 @@ function saveArsenalForm(){
   const codigo = (codigoInput?.value || '').trim();
   const nombre = (nombreInput?.value || '').trim();
   if (!codigo || !nombre){
-    alert('Complete cï¿½digo y nombre.');
+    showAppModal('Complete código y nombre.', 'Datos requeridos');
     return;
   }
   const original = codigoInput?.dataset?.original || codigo;
@@ -1325,8 +1372,9 @@ function saveArsenalForm(){
   bootstrap.Modal.getOrCreateInstance(document.getElementById('arsenalFormModal')).hide();
 }
 
-function removeArsenalItem(codigo){
-  if (!confirm('ï¿½Eliminar este medicamento?')) return;
+async function removeArsenalItem(codigo){
+  const confirmed = await showConfirmModal('¿Eliminar este medicamento?', 'Eliminar medicamento');
+  if (!confirmed) return;
   arsenalState.lista = arsenalState.lista.filter(item => item.codigo !== codigo);
   renderArsenalTable();
   updateMedicamentoCache();
@@ -1384,7 +1432,7 @@ function requireAdminAccess(action, allowedRoles = ['admin']){
   };
   if (adminAccessState.granted){
     if (!hasRole()){
-      alert('No tiene permisos para esta acción.');
+      showAppModal('No tiene permisos para esta acción.', 'Acceso restringido');
       return;
     }
     adminAccessState.pendingAction = null;
@@ -1400,7 +1448,7 @@ function requireAdminAccess(action, allowedRoles = ['admin']){
 function openAdminAccessModal(){
   const modalEl = document.getElementById('adminAccessModal');
   if (!modalEl){
-    alert('No se puede validar el acceso de administrador.');
+    showAppModal('No se puede validar el acceso de administrador.', 'Acceso restringido');
     return;
   }
   document.getElementById('adminAccessError')?.classList.add('d-none');
@@ -1530,7 +1578,7 @@ function scheduleAdminAutoLogout(){
 function openMaintainerMenu(){
   const modalEl = document.getElementById('maintainerModal');
   if (!modalEl){
-    alert('No se encontró el módulo de mantenedor.');
+    showAppModal('No se encontró el módulo de mantenedor.', 'Mantenedor');
     return;
   }
   const role = (adminAccessState.user?.rol || '').toLowerCase();
